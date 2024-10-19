@@ -1,2 +1,2 @@
-bin/nman: cmd/**/*.go internal/**/*.go
+bin/nman: $(shell ls **/*.go)
 	@go build -o ./bin/nman cmd/nman/main.go
