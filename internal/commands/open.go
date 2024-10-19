@@ -14,6 +14,13 @@ func OpenFromWD() {
 		return
 	}
 
+	projectName := path.Base(wd)
+
+	if !internal.IsGitRepository() {
+		fmt.Printf(internal.ErrNotAGitRepository.Error(), projectName)
+		return
+	}
+
 	docsDir, err := os.ReadDir(path.Join(wd, internal.PrimaryDocsDirName))
 	if err != nil {
 		docsDir, err = os.ReadDir(path.Join(wd, internal.AlternateDocsDirName))
@@ -22,8 +29,6 @@ func OpenFromWD() {
 			return
 		}
 	}
-
-	projectName := path.Base(wd)
 
 	fmt.Printf("Manual files from project '%s':\n\n", projectName)
 	for _, v := range docsDir {
