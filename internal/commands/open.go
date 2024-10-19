@@ -14,10 +14,15 @@ func OpenFromWD() {
 		return
 	}
 
-	projectName := path.Base(wd)
+	proj := path.Base(wd)
 
 	if !internal.IsGitRepository() {
-		fmt.Printf(internal.ErrNotAGitRepository.Error(), projectName)
+		fmt.Printf(internal.ErrNotAGitRepository.Error(), proj)
+		return
+	}
+
+	if internal.IsAlreadyRegistered(proj) {
+		fmt.Printf("Opening: https://neoman.local/%s\n", proj)
 		return
 	}
 
@@ -30,11 +35,10 @@ func OpenFromWD() {
 		}
 	}
 
-	fmt.Printf("Manual files from project '%s':\n\n", projectName)
+	fmt.Printf("Manual files from project '%s':\n\n", proj)
 	for _, v := range docsDir {
 		fmt.Println(v.Name())
 	}
 }
 
 // @TODO: Link WD into "Registry"
-// @TODO: Skip WD Link if already in "Registry"
