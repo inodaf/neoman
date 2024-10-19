@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"log"
 	"os"
+
+	"github.com/inodaf/neoman/internal/commands"
 )
 
 func main() {
 	if len(os.Args) == 1 {
-		log.Println("try pwd docs/")
+		commands.OpenFromWD()
 		return
 	} else if len(os.Args) == 2 {
 		log.Printf("try docs/ from '%s'", os.Args[1])
