@@ -8,6 +8,9 @@ import (
 const AppName = "neoman"
 const ShortAppName = "nman"
 
+const PrimaryDocsDirName = "docs"
+const AlternateDocsDirName = "manual"
+
 // AppConfigDir returns the directory path that used
 // for storing internal app support files.
 // It creates the directory if that was not done before.
