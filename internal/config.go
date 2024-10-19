@@ -21,8 +21,8 @@ func AppConfigDir() (string, error) {
 	}
 
 	appConfigDir := path.Join(configDir, AppName)
-	if _, err := os.Stat(appConfigDir); err != nil {
-		if err := os.Mkdir(appConfigDir, os.ModePerm); err != nil {
+	if _, err := os.Stat(appConfigDir); os.IsNotExist(err) {
+		if err := os.Mkdir(appConfigDir, os.ModeDir); err != nil {
 			return "", err
 		}
 	}
@@ -38,12 +38,12 @@ func DocsRegistryDir() (string, error) {
 		return "", err
 	}
 
-	baseDir := path.Join(appConfigDir, "registry")
-	if _, err := os.Stat(baseDir); err != nil {
-		if err := os.Mkdir(baseDir, os.ModePerm); err != nil {
+	docsRegistryDir := path.Join(appConfigDir, "registry")
+	if _, err := os.Stat(docsRegistryDir); os.IsNotExist(err) {
+		if err := os.Mkdir(docsRegistryDir, os.ModeDir); err != nil {
 			return "", err
 		}
 	}
 
-	return baseDir, nil
+	return docsRegistryDir, nil
 }
