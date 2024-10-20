@@ -22,23 +22,27 @@ func OpenFromWD() {
 	}
 
 	if internal.IsAlreadyRegistered(proj) {
-		fmt.Printf("Opening: https://neoman.local/%s\n", proj)
+		 // TODO: Handle text-based rendering (terminal only)
+		fmt.Printf("Opening https://neoman.local/%s in your browser.\n", proj)
 		return
 	}
 
-	docsDir, err := os.ReadDir(path.Join(wd, internal.PrimaryDocsDirName))
+	// TODO: Change to os.Stat() ?
+	// TODO: Add safe checks
+	_, err = os.ReadDir(path.Join(wd, internal.PrimaryDocsDirName))
 	if err != nil {
-		docsDir, err = os.ReadDir(path.Join(wd, internal.AlternateDocsDirName))
+		_, err = os.ReadDir(path.Join(wd, internal.AlternateDocsDirName))
 		if err != nil {
 			fmt.Println(internal.ErrReadDocsDir)
 			return
 		}
 	}
 
-	fmt.Printf("Manual files from project '%s':\n\n", proj)
-	for _, v := range docsDir {
-		fmt.Println(v.Name())
+	err = internal.AddSymlinkToRegistry(proj, wd)
+	if err != nil {
+		fmt.Printf("neoman: Could not link working directory docs on registry")
+		return
 	}
 }
 
-// @TODO: Link WD into "Registry"
+// TODO: Link WD into "Registry"
