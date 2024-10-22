@@ -38,7 +38,7 @@ func AddSymlinkToRegistry(proj, projPath string) error {
 	}
 
 	return os.Symlink(
-		path.Join(projPath, PrimaryDocsDirName), // TODO: Handle when using AlternateDocsDirName.
+		path.Join(projPath, PrimaryDocsDirName),
 		path.Join(registryDir, "local", proj, PrimaryDocsDirName),
 	)
 }

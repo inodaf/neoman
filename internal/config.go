@@ -8,8 +8,9 @@ import (
 const AppName = "neoman"
 const ShortAppName = "nman"
 
+// PrimaryDocsDirName dictates Neoman's convention of having
+// a `docs/` directory at the root of a project.
 const PrimaryDocsDirName = "docs"
-const AlternateDocsDirName = "manual"
 
 const AppHostName = "neoman.local"
 
