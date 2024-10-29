@@ -12,7 +12,7 @@ func Ping() error {
 		return err
 	}
 
-	conn, err := net.DialUnix("unix", nil, addr)
+	conn, err := net.DialUnix(addr.Network(), nil, addr)
 	if err != nil {
 		return err
 	}
@@ -21,6 +21,5 @@ func Ping() error {
 	if _, err := conn.Write([]byte("ping")); err != nil {
 		return err
 	}
-
 	return nil
 }
