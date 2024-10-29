@@ -8,11 +8,15 @@ import (
 const AppName = "neoman"
 const ShortAppName = "nman"
 
+// AppSockAddr is the location of the UDS
+// used for inter-process communication between
+// Neoman's CLI and its daemon. Unix-only.
+const AppSockAddr = "/tmp/nman.sock"
+const AppHostName = "neoman.local"
+
 // PrimaryDocsDirName dictates Neoman's convention of having
 // a `docs/` directory at the root of a project.
 const PrimaryDocsDirName = "docs"
-
-const AppHostName = "neoman.local"
 
 // AppConfigDir returns the directory path that used
 // for storing internal app support files.
