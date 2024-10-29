@@ -1,9 +1,12 @@
 package internal
 
 import (
+	"errors"
 	"log"
 	"os/exec"
 )
+
+var ErrGitNotInstalled = errors.New("neoman: Git is not installed or was not found")
 
 // IsGitRepository checks if the current working directory
 // is a valid Git repository by checking the "git status" command

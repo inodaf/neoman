@@ -30,8 +30,7 @@ func OpenFromWD() {
 	}
 
 	if internal.IsAlreadyRegistered(proj) {
-		err = viewDocs(proj)
-		if err != nil {
+		if err = openInBrowser(proj); err != nil {
 			fmt.Println("neoman: Could not display the docs for this project")
 		}
 		return
@@ -49,24 +48,43 @@ func OpenFromWD() {
 		return
 	}
 
-	err = internal.AddSymlinkToRegistry(proj, wd)
-	if err != nil {
+	if err = internal.AddSymlinkToRegistry(proj, wd); err != nil {
 		fmt.Printf("neoman: Could not link working directory docs on registry")
 		return
 	}
 
-	viewDocs(proj)
+	openInBrowser(proj)
 }
 
-func viewDocs(proj string) error {
-	// TODO: Handle text-based rendering (terminal only)
-	defaultBrowser := os.Getenv("BROWSER")
-	if len(defaultBrowser) != 0 {
-		fmt.Printf("Opening https://neoman.local/%s in your browser.\n", proj)
-		return exec.Command(defaultBrowser, fmt.Sprintf("https://neoman.local/%s", proj)).Start()
-	} else {
-		fmt.Printf("Open https://neoman.local/%s in your browser.\n", proj)
+func OpenFromName(proj string) {
+	if strings.Count(proj, "/") > 1 {
+		fmt.Println("neoman: Invalid argument. Must be 'repo' or 'org/repo'")
+		return
 	}
 
+	if internal.IsAlreadyRegistered(proj) || internal.IsAlreadyRegistered(proj, "remote") {
+		// TODO: Handle text-based rendering (terminal only)
+		// based on user preferences.
+		if err := openInBrowser(proj); err != nil {
+			fmt.Println("neoman: Could not display the docs for this project")
+		}
+		return
+	}
+
+	fmt.Printf("neoman: Project '%s' not registered, trying Git remotes\n", proj)
+}
+
+func openInBrowser(proj string) error {
+	browser := os.Getenv("BROWSER")
+	if len(browser) != 0 {
+		fmt.Printf("Opening https://neoman.local/%s in your browser.\n", proj)
+		cmd := exec.Command(browser, fmt.Sprintf("https://neoman.local/%s", proj))
+		if err := cmd.Start(); err != nil {
+			return err
+		}
+		return cmd.Wait()
+	}
+
+	fmt.Printf("Open https://neoman.local/%s in your browser.\n", proj)
 	return nil
 }

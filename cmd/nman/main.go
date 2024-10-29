@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/inodaf/neoman/internal/commands"
@@ -13,7 +12,7 @@ func main() {
 		commands.OpenFromWD()
 		return
 	} else if len(os.Args) == 2 {
-		log.Printf("try docs/ from '%s'", os.Args[1])
+		commands.OpenFromName(os.Args[1])
 		return
 	}
 
