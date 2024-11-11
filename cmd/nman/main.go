@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/inodaf/neoman/internal/commands"
@@ -10,10 +9,7 @@ import (
 )
 
 func main() {
-	err := daemon.Ping()
-	if err != nil {
-		log.Fatal("neoman: could not reach daemon", err.Error())
-	}
+	daemon.IPC.Ping()
 
 	if len(os.Args) == 1 {
 		commands.OpenFromWD()

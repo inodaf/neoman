@@ -1,39 +1,10 @@
 package main
 
 import (
-	"io"
-	"log"
-	"net"
-	"os"
-
 	"github.com/inodaf/neoman/internal"
+	"github.com/inodaf/neoman/internal/daemon"
 )
 
-func echoServer(c net.Conn) {
-	log.Printf("Client connected [%s]", c.RemoteAddr().Network())
-	io.Copy(c, c)
-	c.Close()
-}
-
 func main() {
-	if err := os.RemoveAll(internal.AppSockAddr); err != nil {
-		log.Fatal(err)
-	}
-
-	l, err := net.Listen("unix", internal.AppSockAddr)
-	if err != nil {
-		log.Fatal("listen error:", err)
-	}
-	defer l.Close()
-
-	for {
-		// Accept new connections, dispatching them to echoServer
-		// in a goroutine.
-		conn, err := l.Accept()
-		if err != nil {
-			log.Fatal("accept error:", err)
-		}
-
-		go echoServer(conn)
-	}
+	daemon.ServeIPC(internal.AppSockAddr)
 }
