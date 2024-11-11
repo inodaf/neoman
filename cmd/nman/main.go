@@ -14,7 +14,7 @@ func main() {
 		return
 	}
 
-	if len(os.Args) == 1 {
+	if len(os.Args) == 1 || (len(os.Args) == 2 && os.Args[1] == ".") {
 		commands.OpenFromWD()
 		return
 	} else if len(os.Args) == 2 {

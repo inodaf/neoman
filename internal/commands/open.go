@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"regexp"
 	"strings"
 
 	"github.com/inodaf/neoman/internal"
@@ -57,7 +58,9 @@ func OpenFromWD() {
 }
 
 func OpenFromName(proj string) {
-	if strings.Count(proj, "/") > 1 {
+	re := regexp.MustCompile(`[^a-z0-9-_.\s\/]`)
+
+	if strings.Count(proj, "/") > 1 || re.Match([]byte(proj)) {
 		fmt.Println("neoman: Invalid argument. Must be 'repo' or 'org/repo'")
 		return
 	}

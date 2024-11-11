@@ -17,6 +17,7 @@ func ServeIPC(sockAddr string) {
 		log.Fatalln("neoman: could not listen to the Unix Domain Socket", err)
 	}
 	defer listener.Close()
+	log.Println("Listening to Unix Domain Socket at", sockAddr)
 
 	handlers := Handlers{}
 	http.Handle("GET /ping", http.HandlerFunc(handlers.Pong))
