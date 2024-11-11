@@ -12,20 +12,16 @@ func ServeIPC(sockAddr string) {
 		log.Fatal(err)
 	}
 
-	// handlers := Handlers{}
 	listener, err := net.Listen("unix", sockAddr)
 	if err != nil {
 		log.Fatalln("neoman: could not listen to the Unix Domain Socket", err)
 	}
 	defer listener.Close()
 
-	if err := http.Serve(listener, http.HandlerFunc(handler)); err != nil {
+	handlers := Handlers{}
+	http.Handle("GET /ping", http.HandlerFunc(handlers.Pong))
+
+	if err := http.Serve(listener, nil); err != nil {
 		log.Fatalln("neoman: could not serve IPC Unix Socket", err)
 	}
-}
-
-func handler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Handling %s", r.URL.Path)
-	w.WriteHeader(http.StatusAccepted)
-	w.Write([]byte("Pong"))
 }
