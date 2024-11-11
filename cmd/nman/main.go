@@ -9,7 +9,10 @@ import (
 )
 
 func main() {
-	daemon.IPC.Ping()
+	if err := daemon.IPC.Ping(); err != nil {
+		fmt.Println("neoman: Could not connect to daemon")
+		return
+	}
 
 	if len(os.Args) == 1 {
 		commands.OpenFromWD()
@@ -20,8 +23,8 @@ func main() {
 	}
 
 	switch os.Args[1] {
-	default:
-		fmt.Printf("neoman: '%s' is not a valid command. See 'nman --help'.\n", os.Args[1])
-		return
+
 	}
+
+	fmt.Printf("neoman: '%s' is not a valid command. See 'nman --help'.\n", os.Args[1])
 }

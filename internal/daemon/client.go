@@ -2,9 +2,6 @@ package daemon
 
 import (
 	"context"
-	"fmt"
-	"io"
-	"log"
 	"net"
 	"net/http"
 	"net/url"
@@ -16,21 +13,12 @@ type unixSockIPC struct {
 	client http.Client
 }
 
-func (ipc *unixSockIPC) Ping() {
+func (ipc *unixSockIPC) Ping() error {
 	resource := url.URL{Host: "unix", Scheme: "http", Path: "/ping"}
-
-	resp, err := ipc.client.Get(resource.String())
-	if err != nil {
-		log.Fatal("neoman: could not connect to daemon.")
+	if _, err := ipc.client.Get(resource.String()); err != nil {
+		return err
 	}
-	defer resp.Body.Close()
-
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		log.Fatal("neoman: could not read from daemon when pinging.")
-	}
-
-	fmt.Println(string(body))
+	return nil
 }
 
 func newUnixSockClient(sockAddr string) *unixSockIPC {
