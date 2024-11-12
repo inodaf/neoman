@@ -21,6 +21,7 @@ func ServeIPC(sockAddr string) {
 
 	handlers := Handlers{}
 	http.Handle("GET /ping", http.HandlerFunc(handlers.Pong))
+	http.Handle("GET /is-trusted", http.HandlerFunc(handlers.CheckTrustedRemoteAccount))
 
 	if err := http.Serve(listener, nil); err != nil {
 		log.Fatalln("neoman: could not serve IPC Unix Socket", err)
