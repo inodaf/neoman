@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"os/exec"
@@ -9,6 +10,7 @@ import (
 	"strings"
 
 	"github.com/inodaf/neoman/internal"
+	"github.com/inodaf/neoman/internal/daemon"
 )
 
 func OpenFromWD() {
@@ -65,6 +67,15 @@ func OpenFromName(proj string) {
 		return
 	}
 
+	accountWithRepo := strings.Split(proj, "/")
+	ok := daemon.IPC.IsTrustedAccount(accountWithRepo[0])
+	if !ok {
+		if ok := askToTrust(accountWithRepo[0]); !ok {
+			fmt.Printf("neoman: User '%s' not trusted.\n", accountWithRepo[0])
+			return
+		}
+	}
+
 	if internal.IsAlreadyRegistered(proj) || internal.IsAlreadyRegistered(proj, "remote") {
 		// TODO: Handle text-based rendering (terminal only)
 		// based on user preferences.
@@ -90,4 +101,18 @@ func openInBrowser(proj string) error {
 
 	fmt.Printf("Open https://neoman.local/%s in your browser.\n", proj)
 	return nil
+}
+
+func askToTrust(account string) bool {
+	fmt.Printf("Remote account '%s' is not trusted. Do you want to trust it? (y/n): ", account)
+
+	scanner := bufio.NewScanner(os.Stdin)
+	scanner.Scan()
+
+	input := strings.ToLower(scanner.Text())
+	if input == "y" || input == "yes" {
+		return true
+	}
+
+	return false
 }

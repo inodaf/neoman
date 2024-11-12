@@ -2,6 +2,7 @@ package daemon
 
 import (
 	"context"
+	"log"
 	"net"
 	"net/http"
 	"net/url"
@@ -15,10 +16,28 @@ type unixSockIPC struct {
 
 func (ipc *unixSockIPC) Ping() error {
 	resource := url.URL{Host: "unix", Scheme: "http", Path: "/ping"}
-	if _, err := ipc.client.Get(resource.String()); err != nil {
-		return err
+	_, err := ipc.client.Get(resource.String())
+
+	return err
+}
+
+func (ipc *unixSockIPC) IsTrustedAccount(account string) bool {
+	query := url.Values{}
+	query.Add("account", account)
+
+	resource := url.URL{
+		Scheme:   "http",
+		Host:     "unix",
+		Path:     "/is-trusted",
+		RawQuery: query.Encode(),
 	}
-	return nil
+
+	resp, err := ipc.client.Get(resource.String())
+	if err != nil {
+		log.Fatalln("neoman: Could not check account from daemon")
+	}
+
+	return resp.StatusCode == http.StatusOK
 }
 
 func newUnixSockClient(sockAddr string) *unixSockIPC {
