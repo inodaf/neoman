@@ -6,5 +6,11 @@ import (
 )
 
 func main() {
+	db, err := internal.NewSQLiteDatabase()
+	if err != nil {
+		panic(err)
+	}
+
+	internal.DB = db
 	daemon.ServeIPC(internal.AppSockAddr)
 }
