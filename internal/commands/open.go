@@ -61,24 +61,23 @@ func OpenFromWD() {
 
 func OpenFromName(proj string) {
 	re := regexp.MustCompile(`[^a-z0-9-_.\s\/]`)
-
 	if strings.Count(proj, "/") > 1 || re.Match([]byte(proj)) {
 		fmt.Println("neoman: Invalid argument. Must be 'repo' or 'org/repo'")
 		return
 	}
 
 	accountWithRepo := strings.Split(proj, "/")
-	ok := daemon.IPC.IsTrustedAccount(accountWithRepo[0])
-	if !ok {
-		if ok := askToTrust(accountWithRepo[0]); !ok {
+	if ok := daemon.IPC.IsAccountTrusted(accountWithRepo[0]); !ok {
+		if askToTrust(accountWithRepo[0]) {
+			daemon.IPC.TrustAccount(accountWithRepo[0])
+		} else {
 			fmt.Printf("neoman: User '%s' not trusted.\n", accountWithRepo[0])
 			return
 		}
 	}
 
+	// TODO: Handle text-based rendering (terminal only) based on user preferences.
 	if internal.IsAlreadyRegistered(proj) || internal.IsAlreadyRegistered(proj, "remote") {
-		// TODO: Handle text-based rendering (terminal only)
-		// based on user preferences.
 		if err := openInBrowser(proj); err != nil {
 			fmt.Println("neoman: Could not display the docs for this project")
 		}
@@ -90,16 +89,18 @@ func OpenFromName(proj string) {
 
 func openInBrowser(proj string) error {
 	browser := os.Getenv("BROWSER")
+	url := fmt.Sprintf("https://%s/%s", internal.AppHostName, proj)
+
 	if len(browser) != 0 {
-		fmt.Printf("Opening https://neoman.local/%s in your browser.\n", proj)
-		cmd := exec.Command(browser, fmt.Sprintf("https://neoman.local/%s", proj))
+		fmt.Printf("Opening %s in your browser.\n", url)
+		cmd := exec.Command(browser, url)
 		if err := cmd.Start(); err != nil {
 			return err
 		}
 		return cmd.Wait()
 	}
 
-	fmt.Printf("Open https://neoman.local/%s in your browser.\n", proj)
+	fmt.Printf("Open %s in your browser.\n", url)
 	return nil
 }
 
@@ -110,9 +111,5 @@ func askToTrust(account string) bool {
 	scanner.Scan()
 
 	input := strings.ToLower(scanner.Text())
-	if input == "y" || input == "yes" {
-		return true
-	}
-
-	return false
+	return input == "y" || input == "yes"
 }
