@@ -1,6 +1,8 @@
 package internal
 
 import (
+	"errors"
+	"io/fs"
 	"log"
 	"os"
 	"path"
@@ -23,7 +25,7 @@ func IsAlreadyRegistered(proj string, options ...string) bool {
 	return err == nil
 }
 
-func AddSymlinkToRegistry(proj, projPath string) error {
+func AddLocalEntryToRegistry(proj, projPath string) error {
 	if IsAlreadyRegistered(proj) {
 		return ErrAlreadyRegistered
 	}
@@ -41,4 +43,21 @@ func AddSymlinkToRegistry(proj, projPath string) error {
 		path.Join(projPath, PrimaryDocsDirName),
 		path.Join(registryDir, "local", proj, PrimaryDocsDirName),
 	)
+}
+
+func AddRemoteEntryToRegistry(owner string) (string, error) {
+	dir, err := DocsRegistryDir()
+	if err != nil {
+		return "", err
+	}
+
+	entry := path.Join(dir, "remote", owner)
+	if _, err := os.Stat(entry); errors.Is(err, fs.ErrNotExist) {
+		err := os.Mkdir(entry, os.ModePerm)
+		if err != nil {
+			return "", err
+		}
+	}
+
+	return entry, nil
 }

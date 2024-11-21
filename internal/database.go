@@ -8,10 +8,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// DB holds a globally accessible reference to the initialized
-// *sql.DB. It is agnostic of the SQL driver.
-var DB *sql.DB
-
 // NewSQLiteDatabase creates a connection to a SQL DB
 // and prepares the base schema.
 func NewSQLiteDatabase() (*sql.DB, error) {

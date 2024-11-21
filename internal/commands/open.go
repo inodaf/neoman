@@ -11,6 +11,7 @@ import (
 
 	"github.com/inodaf/neoman/internal"
 	"github.com/inodaf/neoman/internal/daemon"
+	"github.com/inodaf/neoman/internal/git"
 )
 
 func OpenFromWD() {
@@ -27,7 +28,12 @@ func OpenFromWD() {
 		return
 	}
 
-	if !internal.IsGitRepository() {
+	ok, err := git.IsRepository()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	if !ok {
 		fmt.Printf(internal.ErrNotAGitRepository.Error(), proj)
 		return
 	}
@@ -51,7 +57,7 @@ func OpenFromWD() {
 		return
 	}
 
-	if err = internal.AddSymlinkToRegistry(proj, wd); err != nil {
+	if err = internal.AddLocalEntryToRegistry(proj, wd); err != nil {
 		fmt.Printf("neoman: Could not link working directory docs on registry")
 		return
 	}
@@ -66,12 +72,12 @@ func OpenFromName(proj string) {
 		return
 	}
 
-	accountWithRepo := strings.Split(proj, "/")
-	if ok := daemon.IPC.IsAccountTrusted(accountWithRepo[0]); !ok {
-		if askToTrust(accountWithRepo[0]) {
-			daemon.IPC.TrustAccount(accountWithRepo[0])
+	ownerWithRepo := strings.Split(proj, "/")
+	if ok := daemon.IPC.IsAccountTrusted(ownerWithRepo[0]); !ok {
+		if confirmTrust(ownerWithRepo[0]) {
+			daemon.IPC.TrustAccount(ownerWithRepo[0])
 		} else {
-			fmt.Printf("neoman: User '%s' not trusted.\n", accountWithRepo[0])
+			fmt.Printf("neoman:	'%s' is not trusted. Stopping.\n", ownerWithRepo[0])
 			return
 		}
 	}
@@ -84,7 +90,16 @@ func OpenFromName(proj string) {
 		return
 	}
 
-	fmt.Printf("neoman: Project '%s' not registered, trying Git remotes\n", proj)
+	fmt.Printf("neoman:	Repository '%s' is not registered. Trying Git remotes...\n", proj)
+	err := internal.FetchDocs(ownerWithRepo[0], ownerWithRepo[1])
+	if err != nil {
+		fmt.Print(err)
+		return
+	}
+
+	if err := openInBrowser(proj); err != nil {
+		fmt.Println("neoman:	Could not display the docs for this project")
+	}
 }
 
 func openInBrowser(proj string) error {
@@ -104,8 +119,8 @@ func openInBrowser(proj string) error {
 	return nil
 }
 
-func askToTrust(account string) bool {
-	fmt.Printf("Remote account '%s' is not trusted. Do you want to trust it? (y/n): ", account)
+func confirmTrust(owner string) bool {
+	fmt.Printf("Do you trust owner '%s'? (y/n): ", owner)
 
 	scanner := bufio.NewScanner(os.Stdin)
 	scanner.Scan()

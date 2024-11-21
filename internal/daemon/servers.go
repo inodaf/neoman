@@ -1,16 +1,16 @@
 package daemon
 
 import (
+	"database/sql"
 	"log"
 	"net"
 	"net/http"
 	"os"
 
-	"github.com/inodaf/neoman/internal"
 	"github.com/inodaf/neoman/internal/handlers"
 )
 
-func ServeIPC(sockAddr string) {
+func ServeIPC(sockAddr string, db *sql.DB) {
 	if err := os.RemoveAll(sockAddr); err != nil {
 		log.Fatal(err)
 	}
@@ -23,7 +23,7 @@ func ServeIPC(sockAddr string) {
 	log.Println("Listening to Unix Domain Socket at", sockAddr)
 
 	http.Handle("/ping", handlers.PingHandler{})
-	http.Handle("/trust", handlers.TrustHandler{DB: internal.DB})
+	http.Handle("/trust", handlers.TrustHandler{DB: db})
 
 	if err := http.Serve(listener, nil); err != nil {
 		log.Fatalln("neoman: could not serve IPC Unix Socket", err)

@@ -11,6 +11,5 @@ func main() {
 		panic(err)
 	}
 
-	internal.DB = db
-	daemon.ServeIPC(internal.AppSockAddr)
+	daemon.ServeIPC(internal.AppSockAddr, db)
 }
