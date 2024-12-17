@@ -28,7 +28,7 @@ func (p GitHub) DocsDirExists(owner, repo string) error {
 }
 
 func NewProviderGitHub() *GitHub {
-	h := make(http.Header)
+	h := make(http.Header, 2)
 	h.Add("Accept", "application/vnd.github+json")
 	h.Add("X-GitHub-Api-Version", "2022-11-28")
 
