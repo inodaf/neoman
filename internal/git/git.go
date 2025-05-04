@@ -22,6 +22,8 @@ func IsRepository() (bool, error) {
 	return err == nil, nil
 }
 
+// Clone fetches contents of a repository from a remote source.
+// To preserve disk space and improve download speed only the last commit is downloaded.
 func Clone(uri string) error {
 	binPath, err := exec.LookPath("git")
 	if err != nil {

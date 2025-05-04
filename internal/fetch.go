@@ -16,6 +16,7 @@ func FetchDocs(owner, repo string) error {
 		return fmt.Errorf("neoman: Could not locate 'docs/' from '%s/%s' on GitHub.\nMake sure you have reading rights", owner, repo)
 	}
 
+	fmt.Printf("neoman:	Fetching docs for '%s/%s' from GitHub...\n", owner, repo)
 	ownerRegistryDir, err := AddRemoteEntryToRegistry(owner)
 	if err != nil {
 		return err

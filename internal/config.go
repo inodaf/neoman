@@ -8,11 +8,13 @@ import (
 const AppName = "neoman"
 const ShortAppName = "nman"
 
-// AppSockAddr is the location of the UDS
+// AppSockAddr is the location of the Unix Domain Socket
 // used for inter-process communication between
 // Neoman's CLI and its daemon. Unix-only.
 const AppSockAddr = "/tmp/nman.sock"
-const AppHostName = "neoman.local"
+// const AppHostName = "neoman.local"
+const AppHostName = "localhost:8092"
+const AppWebAppPort = ":8092"
 const AppDBFileName = "neoman.db"
 
 // PrimaryDocsDirName dictates Neoman's convention of having

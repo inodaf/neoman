@@ -35,7 +35,8 @@ func NewSQLiteDatabase() (*sql.DB, error) {
 func prepare(db *sql.DB) error {
 	schema := `CREATE TABLE IF NOT EXISTS TrustedAccount (
 		account TEXT NOT NULL
-	)`
+	);
+	`
 
 	log.Println("db: prepare")
 	_, err := db.Exec(schema)

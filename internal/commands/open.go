@@ -8,6 +8,7 @@ import (
 	"path"
 	"regexp"
 	"strings"
+	"sync"
 
 	"github.com/inodaf/neoman/internal"
 	"github.com/inodaf/neoman/internal/daemon"
@@ -21,25 +22,20 @@ func OpenFromWD() {
 		return
 	}
 
-	proj := path.Base(wd)
+	project := path.Base(wd)
 
-	if strings.HasPrefix(proj, "--") {
-		fmt.Printf(internal.ErrDoubleDashedWdName.Error(), proj)
+	if strings.HasPrefix(project, "--") {
+		fmt.Printf(internal.ErrDoubleDashedWdName.Error(), project)
 		return
 	}
 
-	ok, err := git.IsRepository()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	if !ok {
-		fmt.Printf(internal.ErrNotAGitRepository.Error(), proj)
+	if ok, err := git.IsRepository(); !ok ||  err != nil {
+		fmt.Printf(internal.ErrNotAGitRepository.Error(), project)
 		return
 	}
 
-	if internal.IsAlreadyRegistered(proj) {
-		if err = openInBrowser(proj); err != nil {
+	if internal.IsAlreadyRegistered(project) {
+		if err = openInBrowser(project); err != nil {
 			fmt.Println("neoman: Could not display the docs for this project")
 		}
 		return
@@ -53,33 +49,42 @@ func OpenFromWD() {
 	}
 
 	if len(docsDir) == 0 {
-		fmt.Printf(internal.ErrEmptyDocsDir.Error(), proj)
+		fmt.Printf(internal.ErrEmptyDocsDir.Error(), project)
 		return
 	}
 
-	if err = internal.AddLocalEntryToRegistry(proj, wd); err != nil {
+	if err = internal.AddLocalEntryToRegistry(project, wd); err != nil {
 		fmt.Printf("neoman: Could not link working directory docs on registry")
 		return
 	}
 
-	openInBrowser(proj)
+	openInBrowser(project)
 }
 
 func OpenFromName(proj string) {
-	re := regexp.MustCompile(`[^a-z0-9-_.\s\/]`)
+	re := regexp.MustCompile(`[^a-zA-Z0-9-_.\s\/]`)
 	if strings.Count(proj, "/") > 1 || re.Match([]byte(proj)) {
 		fmt.Println("neoman: Invalid argument. Must be 'repo' or 'org/repo'")
 		return
 	}
 
+	var wg sync.WaitGroup
+	defer wg.Wait()
+
+	proj = strings.ToLower(proj)
 	ownerWithRepo := strings.Split(proj, "/")
-	if ok := daemon.IPC.IsAccountTrusted(ownerWithRepo[0]); !ok {
-		if confirmTrust(ownerWithRepo[0]) {
-			daemon.IPC.TrustAccount(ownerWithRepo[0])
-		} else {
-			fmt.Printf("neoman:	'%s' is not trusted. Stopping.\n", ownerWithRepo[0])
+	owner, repo := ownerWithRepo[0], ownerWithRepo[1]
+
+	if ok := daemon.IPC.IsAccountTrusted(owner); len(ownerWithRepo) == 2 && !ok {
+		if !confirmTrust(owner) {
+			fmt.Printf("neoman:	'%s' is not trusted. Stopping.\n", owner)
 			return
 		}
+		wg.Add(1)
+		go func() {
+			daemon.IPC.TrustAccount(owner)
+			wg.Done()
+		}()
 	}
 
 	// TODO: Handle text-based rendering (terminal only) based on user preferences.
@@ -90,8 +95,7 @@ func OpenFromName(proj string) {
 		return
 	}
 
-	fmt.Printf("neoman:	Repository '%s' is not registered. Trying Git remotes...\n", proj)
-	err := internal.FetchDocs(ownerWithRepo[0], ownerWithRepo[1])
+	err := internal.FetchDocs(owner, repo)
 	if err != nil {
 		fmt.Print(err)
 		return
@@ -104,7 +108,7 @@ func OpenFromName(proj string) {
 
 func openInBrowser(proj string) error {
 	browser := os.Getenv("BROWSER")
-	url := fmt.Sprintf("https://%s/%s", internal.AppHostName, proj)
+	url := fmt.Sprintf("http://%s/%s", internal.AppHostName, proj)
 
 	if len(browser) != 0 {
 		fmt.Printf("Opening %s in your browser.\n", url)
