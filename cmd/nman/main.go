@@ -5,20 +5,38 @@ import (
 	"os"
 
 	"github.com/inodaf/neoman/internal/commands"
-	"github.com/inodaf/neoman/internal/daemon"
+	"github.com/inodaf/neoman/internal2/adapters/driven"
+	"github.com/inodaf/neoman/internal2/adapters/driving"
 )
 
+var gitRemoteProvider = driven.NewProviderGitHub()
+var projectRegistry = driven.FSProjectRegistry{GitRemoteClient: gitRemoteProvider}
+var authorService = driven.IPCAuthorService{}
+var cliPrompter = driving.CLIUserPrompter{}
+
 func main() {
-	if err := daemon.IPC.Ping(); err != nil {
+	err := driven.PingUnixSock()
+	if err != nil {
 		fmt.Println("neoman: Could not connect to daemon")
 		return
+	}
+
+	controller := driving.DocsControllerCLI{
+		gitRemoteProvider,
+		projectRegistry,
+		authorService,
+		cliPrompter,
 	}
 
 	if len(os.Args) == 1 || (len(os.Args) == 2 && os.Args[1] == ".") {
 		commands.OpenFromWD()
 		return
 	} else if len(os.Args) == 2 {
-		commands.OpenFromName(os.Args[1])
+		err = controller.OpenFromRemote(os.Args[1])
+		if err != nil {
+			fmt.Printf("neoman: %s", err.Error())
+		}
+
 		return
 	}
 

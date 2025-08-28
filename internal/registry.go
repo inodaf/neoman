@@ -6,12 +6,14 @@ import (
 	"log"
 	"os"
 	"path"
+	
+	"github.com/inodaf/neoman/internal2/adapters/driven"
 )
 
 func IsAlreadyRegistered(proj string, options ...string) bool {
 	registryDir, err := DocsRegistryDir()
 	if err != nil {
-		log.Fatalln(ErrAccessRegistryDir)
+		log.Fatalln(driven.ErrAccessRegistryDir)
 	}
 
 	registryScope := "local"
@@ -27,7 +29,7 @@ func IsAlreadyRegistered(proj string, options ...string) bool {
 
 func AddLocalEntryToRegistry(proj, projPath string) error {
 	if IsAlreadyRegistered(proj) {
-		return ErrAlreadyRegistered
+		return driven.ErrAlreadyRegistered
 	}
 
 	registryDir, err := DocsRegistryDir()
@@ -36,7 +38,7 @@ func AddLocalEntryToRegistry(proj, projPath string) error {
 	}
 
 	if err = os.Mkdir(path.Join(registryDir, "local", proj), os.ModePerm); err != nil {
-		return ErrCreateLocalDocsDir
+		return driven.ErrCreateLocalDocsDir
 	}
 
 	return os.Symlink(

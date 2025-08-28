@@ -28,6 +28,17 @@ func ServeSocket(sockAddr string, db *sql.DB) {
 	mux.Handle("/ping", handlers.PingHandler{})
 	mux.Handle("/trust", handlers.TrustHandler{DB: db})
 
+	mux.HandleFunc("POST /author", func(writer http.ResponseWriter, request *http.Request) {
+//		response, err := json.Marshal([]byte(`"{"name":"gomlx"}"`))
+//		if err != nil {
+//			http.Error(writer, "not possible to marshal JSON", http.StatusInternalServerError)
+//			return
+//		}
+
+		writer.WriteHeader(http.StatusCreated)
+		writer.Write([]byte(`{"name":"gomlx"}`))
+	})
+
 	if err := http.Serve(listener, mux); err != nil {
 		log.Fatalln("neoman: could not serve IPC Unix Socket", err)
 	}
@@ -62,7 +73,7 @@ func ServeWeb(port string, db *sql.DB) {
 			return
 		}
 
-		http.ServeFile(w, r, path.Join(dir, "local", repo, "docs", "index.md"))
+		http.ServeFile(w, r, path.Join(dir, "local", repo, "docs", "README.md"))
 	})
 
 	mux.HandleFunc("GET /{owner}/{repo}", func(w http.ResponseWriter, r *http.Request) {

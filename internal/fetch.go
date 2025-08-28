@@ -2,14 +2,14 @@ package internal
 
 import (
 	"fmt"
-	"log"
-	"os"
-
-	"github.com/inodaf/neoman/internal/git"
+	"github.com/inodaf/neoman/internal/domains/ports"
+	adapters2 "github.com/inodaf/neoman/internal/infra/adapters/driven/http/github"
+	"github.com/inodaf/neoman/internal/infra/adapters/driven/persistence/registry"
 )
 
 func FetchDocs(owner, repo string) error {
-	remote := git.NewProviderGitHub()
+	remote := adapters2.NewProviderGitHub()
+	registry := adapters.FSProjectRegistry{}
 
 	err := remote.DocsDirExists(owner, repo)
 	if err != nil {
@@ -17,26 +17,10 @@ func FetchDocs(owner, repo string) error {
 	}
 
 	fmt.Printf("neoman:	Fetching docs for '%s/%s' from GitHub...\n", owner, repo)
-	ownerRegistryDir, err := AddRemoteEntryToRegistry(owner)
-	if err != nil {
-		return err
-	}
 
-	wd, err := os.Getwd()
-	if err != nil {
-		log.Fatal(ErrGetWd)
-	}
-
-	err = os.Chdir(ownerRegistryDir)
-	if err != nil {
-		return err
-	}
-	defer os.Chdir(wd)
-
-	err = git.Clone(remote.GitURL(owner, repo))
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return registry.AddEntry(ports.RegistryEntry{
+		Scope:   ports.RemoteScope,
+		Owner:   owner,
+		Project: repo,
+	})
 }

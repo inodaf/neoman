@@ -36,6 +36,10 @@ func prepare(db *sql.DB) error {
 	schema := `CREATE TABLE IF NOT EXISTS TrustedAccount (
 		account TEXT NOT NULL
 	);
+
+	CREATE TABLE IF NOT EXISTS Author (
+    name TEXT NOT NULL
+  );
 	`
 
 	log.Println("db: prepare")

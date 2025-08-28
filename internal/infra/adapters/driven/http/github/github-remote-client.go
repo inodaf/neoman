@@ -1,7 +1,8 @@
-package git
+package adapters
 
 import (
 	"fmt"
+	"github.com/inodaf/neoman/internal/domains/ports"
 	"net/http"
 	"net/url"
 )
@@ -25,7 +26,7 @@ func (p GitHub) DocsDirExists(owner, repo string) error {
 		return err
 	}
 	if res.StatusCode == http.StatusNotFound {
-		return ErrGitRemoteNotFound
+		return ports.ErrGitRemoteNotFound
 	}
 
 	return nil

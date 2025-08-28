@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"os/exec"
 	"path"
 	"regexp"
 	"strings"
@@ -12,7 +11,8 @@ import (
 
 	"github.com/inodaf/neoman/internal"
 	"github.com/inodaf/neoman/internal/daemon"
-	"github.com/inodaf/neoman/internal/git"
+	"github.com/inodaf/neoman/packages/browser"
+	"github.com/inodaf/neoman/packages/git"
 )
 
 func OpenFromWD() {
@@ -29,13 +29,13 @@ func OpenFromWD() {
 		return
 	}
 
-	if ok, err := git.IsRepository(); !ok ||  err != nil {
+	if ok, err := git.IsRepository(); !ok || err != nil {
 		fmt.Printf(internal.ErrNotAGitRepository.Error(), project)
 		return
 	}
 
 	if internal.IsAlreadyRegistered(project) {
-		if err = openInBrowser(project); err != nil {
+		if err = browser.Open(project); err != nil {
 			fmt.Println("neoman: Could not display the docs for this project")
 		}
 		return
@@ -58,7 +58,7 @@ func OpenFromWD() {
 		return
 	}
 
-	openInBrowser(project)
+	browser.Open(project)
 }
 
 func OpenFromName(proj string) {
@@ -76,7 +76,7 @@ func OpenFromName(proj string) {
 	owner, repo := ownerWithRepo[0], ownerWithRepo[1]
 
 	if ok := daemon.IPC.IsAccountTrusted(owner); len(ownerWithRepo) == 2 && !ok {
-		if !confirmTrust(owner) {
+		if !ConfirmTrust(owner) {
 			fmt.Printf("neoman:	'%s' is not trusted. Stopping.\n", owner)
 			return
 		}
@@ -89,7 +89,7 @@ func OpenFromName(proj string) {
 
 	// TODO: Handle text-based rendering (terminal only) based on user preferences.
 	if internal.IsAlreadyRegistered(proj) || internal.IsAlreadyRegistered(proj, "remote") {
-		if err := openInBrowser(proj); err != nil {
+		if err := browser.Open(proj); err != nil {
 			fmt.Println("neoman: Could not display the docs for this project")
 		}
 		return
@@ -101,29 +101,12 @@ func OpenFromName(proj string) {
 		return
 	}
 
-	if err := openInBrowser(proj); err != nil {
+	if err := browser.Open(proj); err != nil {
 		fmt.Println("neoman:	Could not display the docs for this project")
 	}
 }
 
-func openInBrowser(proj string) error {
-	browser := os.Getenv("BROWSER")
-	url := fmt.Sprintf("http://%s/%s", internal.AppHostName, proj)
-
-	if len(browser) != 0 {
-		fmt.Printf("Opening %s in your browser.\n", url)
-		cmd := exec.Command(browser, url)
-		if err := cmd.Start(); err != nil {
-			return err
-		}
-		return cmd.Wait()
-	}
-
-	fmt.Printf("Open %s in your browser.\n", url)
-	return nil
-}
-
-func confirmTrust(owner string) bool {
+func ConfirmTrust(owner string) bool {
 	fmt.Printf("Do you trust owner '%s'? (y/n): ", owner)
 
 	scanner := bufio.NewScanner(os.Stdin)
