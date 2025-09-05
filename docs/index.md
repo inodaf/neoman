@@ -1,6 +1,6 @@
 # Neoman
 
-[![Static Badge](https://img.shields.io/badge/Docs-%24_nman_inodaf%2Fnman-black)](https://nman.local/inodaf/nman)
+[![Static Badge](https://img.shields.io/badge/Docs-%24_nman_inodaf%2Fneoman-black)](https://nman.local/inodaf/neoman)
 
 A modern documentation reader inspired by Unix `man` pages, designed to make software documentation accessible, searchable, and maintainable.
 
@@ -10,29 +10,35 @@ Finding and reading documentation for your software stack shouldn't be a hassle.
 
 ## Key Features
 
-### 🚀 Zero-Deployment Documentation
+### Zero-Deployment Documentation
+
 Focus on writing great docs, not managing infrastructure. No servers to maintain, no hosting costs, no deployment pipelines. Just write Markdown and push to Git.
 
-### 📚 Git-Native Workflow
+### Git-native Workflow
+
 Documentation stays in sync with your code automatically. Push to any Git provider (GitHub, GitLab, etc.) and readers get updates instantly.
 
-### 📝 Convention Over Configuration
-Simple structure: add a `/docs` directory with an `index.md` file and additional `.md` files. That's it.
+### Convention Over Configuration
 
-### 🔍 Unified Documentation Hub
+Create a `/docs` directory with an `index.md` file and additional `.md` files. That's enough for software maintainers to adopt Neoman.
+
+### Unified Documentation Hub
+
 All your organization's documentation in one searchable place. Use full-text search across all docs or filter by specific projects.
 
 ```sh
-nman inodaf/nman
+nman inodaf/neoman
 ```
 
-### 🔒 Local & Secure
+### Local & Secure
+
 Everything runs locally on your machine. No data leaves your device, perfect for private organizational documentation.
 
-### 🔗 Shareable Links
-Share documentation with colleagues using local URLs like [https://nman.local/inodaf/nman](https://nman.local/inodaf/nman). Perfect for README badges:
+### Shareable Links
 
-[![Static Badge](https://img.shields.io/badge/Read_Docs-%24_nman_inodaf%2Fnman-black)](https://nman.local/inodaf/nman)
+Share documentation with colleagues using local URLs like [https://nman.local/inodaf/neoman](https://nman.local/inodaf/neoman). Perfect for README badges:
+
+[![Static Badge](https://img.shields.io/badge/Read_Docs-%24_nman_inodaf%2Fneoman-black)](https://nman.local/inodaf/neoman)
 
 ## Installation
 
@@ -44,16 +50,8 @@ The installer will request permission to configure the `nman.local` domain in yo
 
 ## Quick Start
 
-View this documentation using Neoman itself:
+After installation, you can read Neoman's documentation using Neoman itself:
 
 ```sh
-nman inodaf/nman
-```
-
-## Documentation
-
-Complete documentation is available in the [/docs](/docs) directory or through Neoman:
-
-```sh
-nman inodaf/nman
+nman inodaf/neoman
 ```
