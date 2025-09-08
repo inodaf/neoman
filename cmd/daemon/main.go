@@ -3,26 +3,26 @@ package main
 import (
 	"sync"
 
-	"github.com/inodaf/neoman/internal"
-	"github.com/inodaf/neoman/internal/daemon"
+	"github.com/inodaf/neoman/internal3/management"
 )
 
 func main() {
-	var wg sync.WaitGroup
-	db, err := internal.NewSQLiteDatabase()
+	db, err := management.NewSQLiteDatabase()
 	if err != nil {
 		panic(err)
 	}
 
+	var wg sync.WaitGroup
 	wg.Add(2)
+
 	go func() {
 		defer wg.Done()
-		daemon.ServeSocket(internal.AppSockAddr, db)
+		management.SocketServeIPC(db)
 	}()
 
 	go func() {
 		defer wg.Done()
-		daemon.ServeWeb(internal.AppWebAppPort, db)
+		management.SocketServeTCP(db)
 	}()
 
 	wg.Wait()
