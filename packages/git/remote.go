@@ -6,15 +6,11 @@ import (
 	"net/url"
 )
 
-type GitHub struct {
+type GitHubClient struct {
 	baseRequest http.Request
 }
 
-func (p GitHub) GitURL(owner, repo string) string {
-	return fmt.Sprintf("git@github.com:%s/%s.git", owner, repo)
-}
-
-func (p GitHub) DocsDirExists(owner, repo string) error {
+func (p GitHubClient) IsDocsDirPresent(owner, repo string) error {
 	p.baseRequest.URL.Path = fmt.Sprintf("repos/%s/%s/contents/docs", owner, repo)
 	res, err := http.Get(p.baseRequest.URL.String())
 	if err != nil {
@@ -27,12 +23,12 @@ func (p GitHub) DocsDirExists(owner, repo string) error {
 	return nil
 }
 
-func NewProviderGitHub() *GitHub {
+func NewGitHubClient() *GitHubClient {
 	h := make(http.Header, 2)
 	h.Add("Accept", "application/vnd.github+json")
 	h.Add("X-GitHub-Api-Version", "2022-11-28")
 
-	return &GitHub{
+	return &GitHubClient{
 		baseRequest: http.Request{
 			Header: h,
 			URL:    &url.URL{Scheme: "https", Host: "api.github.com"},

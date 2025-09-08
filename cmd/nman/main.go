@@ -4,21 +4,22 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/inodaf/neoman/internal/commands"
-	"github.com/inodaf/neoman/internal/daemon"
+	"github.com/inodaf/neoman/internal/management"
+	"github.com/inodaf/neoman/internal/operations"
 )
 
 func main() {
-	if err := daemon.IPC.Ping(); err != nil {
+	err := management.SocketClientPing()
+	if err != nil {
 		fmt.Println("neoman: Could not connect to daemon")
 		return
 	}
 
 	if len(os.Args) == 1 || (len(os.Args) == 2 && os.Args[1] == ".") {
-		commands.OpenFromWD()
+		operations.OpenFromCurrentDirectory()
 		return
 	} else if len(os.Args) == 2 {
-		commands.OpenFromName(os.Args[1])
+		operations.OpenFromRepositoryName(os.Args[1])
 		return
 	}
 

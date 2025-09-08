@@ -4,6 +4,9 @@
 
 A modern documentation reader inspired by Unix `man` pages, designed to make software documentation accessible, searchable, and maintainable.
 
+> [!NOTE]
+> Neoman is currently in early development. Expect frequent updates and changes as we refine the experience.
+
 ## Why Neoman?
 
 Finding and reading documentation for your software stack shouldn't be a hassle. Neoman brings back the simplicity of Unix `man` pages while adding modern features for today's development workflows.
