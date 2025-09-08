@@ -3,7 +3,7 @@ package operations
 import (
 	"fmt"
 
-	"github.com/inodaf/neoman/internal3/management"
+	"github.com/inodaf/neoman/internal/management"
 	"github.com/inodaf/neoman/packages/git"
 )
 

@@ -3,7 +3,7 @@ package main
 import (
 	"sync"
 
-	"github.com/inodaf/neoman/internal3/management"
+	"github.com/inodaf/neoman/internal/management"
 )
 
 func main() {

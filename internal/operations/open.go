@@ -7,7 +7,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/inodaf/neoman/internal3/management"
+	"github.com/inodaf/neoman/internal/management"
 	"github.com/inodaf/neoman/packages/browser"
 	"github.com/inodaf/neoman/packages/config"
 	"github.com/inodaf/neoman/packages/git"

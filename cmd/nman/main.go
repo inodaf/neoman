@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/inodaf/neoman/internal3/management"
-	"github.com/inodaf/neoman/internal3/operations"
+	"github.com/inodaf/neoman/internal/management"
+	"github.com/inodaf/neoman/internal/operations"
 )
 
 func main() {
