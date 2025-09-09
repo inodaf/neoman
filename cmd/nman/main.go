@@ -19,7 +19,7 @@ func main() {
 		operations.OpenFromCurrentDirectory()
 		return
 	} else if len(os.Args) == 2 {
-		operations.OpenFromRepositoryName(os.Args[1])
+		operations.OpenFromName(os.Args[1])
 		return
 	}
 

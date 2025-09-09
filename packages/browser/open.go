@@ -8,22 +8,24 @@ import (
 	"github.com/inodaf/neoman/packages/config"
 )
 
-func Open(proj string) error {
+var fallbackMessage = "Open %s in your browser.\n"
+
+func Open(proj string) {
 	url := fmt.Sprintf("http://%s/%s", config.AppHostName, proj)
 	browser := os.Getenv("BROWSER")
 
 	if len(browser) == 0 {
-		fmt.Printf("Open %s in your browser.\n", url)
-		return nil
+		fmt.Printf(fallbackMessage, url)
+		return
 	}
 
-	fmt.Printf("Opening %s in your browser.\n", url)
 	cmd := exec.Command(browser, url)
-
 	err := cmd.Start()
+
 	if err != nil {
-		return err
+		fmt.Printf(fallbackMessage, url)
+		return
 	}
 
-	return cmd.Wait()
+	cmd.Wait()
 }
