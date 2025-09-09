@@ -7,6 +7,22 @@ A modern documentation reader inspired by Unix `man` pages, designed to make sof
 > [!NOTE]
 > Neoman is currently in early development. Expect frequent updates and changes as we refine the experience.
 
+## Installation (soon - you need to compile from source for now)
+
+```sh
+curl https://raw.githubusercontent.com/inodaf/neoman/refs/heads/main/install.sh | bash
+```
+
+The installer will request permission to configure the `nman.local` domain in your `/etc/hosts` file for the best experience.
+
+## Quick Start
+
+After installation, you can read Neoman's documentation using Neoman itself:
+
+```sh
+nman inodaf/neoman
+```
+
 ## Why Neoman?
 
 Finding and reading documentation for your software stack shouldn't be a hassle. Neoman brings back the simplicity of Unix `man` pages while adding modern features for today's development workflows.
@@ -42,19 +58,3 @@ Everything runs locally on your machine. No data leaves your device, perfect for
 Share documentation with colleagues using local URLs like [https://nman.local/inodaf/neoman](https://nman.local/inodaf/neoman). Perfect for README badges:
 
 [![Static Badge](https://img.shields.io/badge/Read_Docs-%24_nman_inodaf%2Fneoman-black)](https://nman.local/inodaf/neoman)
-
-## Installation
-
-```sh
-curl https://raw.githubusercontent.com/inodaf/neoman/refs/heads/main/install.sh | bash
-```
-
-The installer will request permission to configure the `nman.local` domain in your `/etc/hosts` file for the best experience.
-
-## Quick Start
-
-After installation, you can read Neoman's documentation using Neoman itself:
-
-```sh
-nman inodaf/neoman
-```
