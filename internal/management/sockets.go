@@ -16,7 +16,7 @@ import (
 var UnixSockClient http.Client = http.Client{
 	Transport: &http.Transport{
 		DialContext: func(ctx context.Context, network, addr string) (net.Conn, error) {
-			return net.Dial("unix", config.AppSockAddr)
+			return net.Dial("unix", config.AppSockPath)
 		},
 	},
 }
@@ -33,17 +33,17 @@ func SocketClientPing() error {
 // SocketServeIPC serves the IPC Unix Domain Socket (UDS) for communication
 // between nman and the nmand (daemon).
 func SocketServeIPC(db *sql.DB) {
-	if err := os.RemoveAll(config.AppSockAddr); err != nil {
+	if err := os.RemoveAll(config.AppSockPath); err != nil {
 		log.Fatal(err)
 	}
 
-	listener, err := net.Listen("unix", config.AppSockAddr)
+	listener, err := net.Listen("unix", config.AppSockPath)
 	if err != nil {
 		log.Fatalln("neoman: could not listen to the socket", err)
 	}
 
 	defer listener.Close()
-	log.Println("Listening to socket at", config.AppSockAddr)
+	log.Println("Listening to socket at", config.AppSockPath)
 
 	mux := http.NewServeMux()
 	mux.HandleFunc("/ping", func(w http.ResponseWriter, r *http.Request) {
