@@ -8,9 +8,9 @@ import (
 	"strings"
 
 	"github.com/inodaf/neoman/internal/management"
-	"github.com/inodaf/neoman/packages/browser"
-	"github.com/inodaf/neoman/packages/config"
-	"github.com/inodaf/neoman/packages/git"
+	"github.com/inodaf/neoman/pkg/browser"
+	"github.com/inodaf/neoman/pkg/config"
+	"github.com/inodaf/neoman/pkg/git"
 )
 
 func OpenFromCurrentDirectory() {

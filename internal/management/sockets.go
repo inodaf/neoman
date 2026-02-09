@@ -10,7 +10,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/inodaf/neoman/packages/config"
+	"github.com/inodaf/neoman/pkg/config"
 )
 
 var UnixSockClient http.Client = http.Client{
