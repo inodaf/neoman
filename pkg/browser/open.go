@@ -5,7 +5,7 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/inodaf/neoman/packages/config"
+	"github.com/inodaf/neoman/pkg/config"
 )
 
 var fallbackMessage = "Open %s in your browser.\n"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/inodaf/neoman/internal/management"
-	"github.com/inodaf/neoman/packages/git"
+	"github.com/inodaf/neoman/pkg/git"
 )
 
 func FetchDocs(owner, repo string) error {

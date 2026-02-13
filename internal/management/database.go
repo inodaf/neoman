@@ -5,7 +5,7 @@ import (
 	"log"
 	"path"
 
-	"github.com/inodaf/neoman/packages/config"
+	"github.com/inodaf/neoman/pkg/config"
 	_ "github.com/mattn/go-sqlite3"
 )
 

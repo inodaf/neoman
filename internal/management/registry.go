@@ -7,8 +7,8 @@ import (
 	"os"
 	"path"
 
-	"github.com/inodaf/neoman/packages/config"
-	"github.com/inodaf/neoman/packages/git"
+	"github.com/inodaf/neoman/pkg/config"
+	"github.com/inodaf/neoman/pkg/git"
 )
 
 type registryType int
