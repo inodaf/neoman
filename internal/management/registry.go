@@ -49,10 +49,6 @@ func RegistryHasEntry(entry RegistryEntry) bool {
 }
 
 func RegistryAddEntry(entry RegistryEntry) error {
-	if RegistryHasEntry(entry) {
-		return errors.New("a project of same name is already registered")
-	}
-
 	registryDir, err := config.DocsRegistryDir()
 	if err != nil {
 		return err
@@ -99,5 +95,20 @@ func addRemoteEntry(input RegistryEntry, registryDir string) error {
 
 	defer os.Chdir(wd)
 
-	return git.Clone(input.Owner, input.Project, git.GitRemoteProviderGitHub)
+	err = git.Clone(input.Owner, input.Project, git.GitRemoteProviderGitHub)
+	if err != nil {
+		return errors.New("could not copy documentation from remote")
+	}
+
+	err = os.Chdir(path.Join(ownerDir, input.Project))
+	if err != nil {
+		return errors.New("could not access documentation directory")
+	}
+
+	err = git.SparseCheckout()
+	if err != nil {
+		return errors.New("could not sync documentation from remote")
+	}
+
+	return nil
 }
