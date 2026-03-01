@@ -48,6 +48,22 @@ func RegistryHasEntry(entry RegistryEntry) bool {
 	return err == nil
 }
 
+func RegistryEntryDirPath(entry RegistryEntry) (string, error) {
+	registryDir, err := config.DocsRegistryDir()
+	if err != nil {
+		return "", err
+	}
+
+	switch entry.Scope {
+	case RegistryTypeLocal:
+		return path.Join(registryDir, "local", entry.Project), nil
+	case RegistryTypeRemote:
+		return path.Join(registryDir, "remote", entry.Owner, entry.Project), nil
+	default:
+		return "", errors.New("invalid registry type")
+	}
+}
+
 func RegistryAddEntry(entry RegistryEntry) error {
 	registryDir, err := config.DocsRegistryDir()
 	if err != nil {

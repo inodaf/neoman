@@ -7,7 +7,7 @@ import (
 	"github.com/inodaf/neoman/pkg/git"
 )
 
-func FetchDocs(owner, repo string) error {
+func GetDocs(owner, repo string) error {
 	remote := git.NewGitHubClient()
 
 	err := remote.IsDocsDirPresent(owner, repo)
@@ -17,9 +17,23 @@ func FetchDocs(owner, repo string) error {
 
 	fmt.Printf("neoman:	Fetching docs for '%s/%s' from GitHub...\n", owner, repo)
 
-	return management.RegistryAddEntry(management.RegistryEntry{
+	err = management.RegistryAddEntry(management.RegistryEntry{
 		Scope:   management.RegistryTypeRemote,
 		Owner:   owner,
 		Project: repo,
 	})
+	if err != nil {
+		return err
+	}
+
+	// Sync docs to database after successful clone
+	fmt.Printf("neoman:	Syncing docs to database for '%s/%s'...\n", owner, repo)
+
+	db, err := management.NewSQLiteDatabase()
+	if err != nil {
+		return fmt.Errorf("neoman: could not open database for sync: %w", err)
+	}
+	defer db.Close()
+
+	return Sync(owner, repo, db)
 }

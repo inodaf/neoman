@@ -2,7 +2,7 @@ package management
 
 import (
 	"database/sql"
-	"log"
+	"log/slog"
 	"path"
 
 	"github.com/inodaf/neoman/pkg/config"
@@ -38,14 +38,22 @@ func NewSQLiteDatabase() (*sql.DB, error) {
 // prepare defines the database schema and executes it
 // against the provided [db] reference.
 func prepare(db *sql.DB) error {
-	log.Println("db: prepare")
-	schema := ``
+	schema := `
+		CREATE TABLE IF NOT EXISTS docpages (
+			author TEXT NOT NULL,
+			repository TEXT NOT NULL,
+			relative_path TEXT NOT NULL,
+			title TEXT NOT NULL,
+			content TEXT NOT NULL,
+			last_modified_at DATETIME NOT NULL,
+			vector BLOB
+		);
+	`
 
-	_, err := db.Exec(schema)
-	if err != nil {
+	if _, err := db.Exec(schema); err != nil {
+		slog.Error("Database schema preparation failed", "error", err)
 		return err
 	}
 
-	log.Println("db: prepare success")
 	return nil
 }

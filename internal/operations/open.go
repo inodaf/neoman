@@ -101,7 +101,7 @@ func OpenFromName(proj string) {
 		return
 	}
 
-	err := FetchDocs(author, repo)
+	err := GetDocs(author, repo)
 	if err != nil {
 		fmt.Print(err)
 		return

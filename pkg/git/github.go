@@ -26,8 +26,9 @@ func (client *GitHubClient) IsDocsDirPresent(owner, repo string) error {
 
 func NewGitHubClient() *GitHubClient {
 	h := make(http.Header, 2)
-	h.Add("Accept", "application/vnd.github+json")
-	h.Add("X-GitHub-Api-Version", "2022-11-28")
+
+	h.Set("Accept", "application/vnd.github+json")
+	h.Set("X-GitHub-Api-Version", "2022-11-28")
 
 	return &GitHubClient{
 		Request: http.Request{
