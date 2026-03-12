@@ -6,6 +6,20 @@ import (
 	"net/url"
 )
 
+func NewGitHubClient() *GitHubClient {
+	h := make(http.Header, 2)
+
+	h.Set("Accept", "application/vnd.github+json")
+	h.Set("X-GitHub-Api-Version", "2022-11-28")
+
+	return &GitHubClient{
+		Request: http.Request{
+			Header: h,
+			URL:    &url.URL{Scheme: "https", Host: "api.github.com"},
+		},
+	}
+}
+
 type GitHubClient struct {
 	http.Client
 	http.Request
@@ -24,16 +38,7 @@ func (client *GitHubClient) IsDocsDirPresent(owner, repo string) error {
 	return nil
 }
 
-func NewGitHubClient() *GitHubClient {
-	h := make(http.Header, 2)
-
-	h.Set("Accept", "application/vnd.github+json")
-	h.Set("X-GitHub-Api-Version", "2022-11-28")
-
-	return &GitHubClient{
-		Request: http.Request{
-			Header: h,
-			URL:    &url.URL{Scheme: "https", Host: "api.github.com"},
-		},
-	}
+func (client *GitHubClient) ProviderName() string {
+	return "github"
 }
+

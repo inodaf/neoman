@@ -1,7 +1,7 @@
-$ nman view n26/valium "Authoring Docs/4. Publishing.md"
+$ nman view n26/repo "Authoring Docs/4. Publishing.md"
 
 ---
-project: n26/valium
+project: n26/repo
 title: Publishing
 path: /Authoring Docs/4. Publishing.md
 ---

@@ -1,6 +1,7 @@
 package operations
 
 import (
+	"database/sql"
 	"fmt"
 
 	"github.com/inodaf/neoman/internal/management"
@@ -36,4 +37,27 @@ func GetDocs(owner, repo string) error {
 	defer db.Close()
 
 	return Sync(owner, repo, db)
+}
+
+// QueryDocumentContent retrieves document content and title from the database
+// using case-insensitive path matching
+func QueryDocumentContent(db *sql.DB, author, repository, relativePath string) (content, title string, err error) {
+	// Query with case-insensitive path matching
+	query := `
+		SELECT content, title FROM docpages 
+		WHERE author = ? AND repository = ? 
+		  AND LOWER(relative_path) = LOWER(?)
+		LIMIT 1
+	`
+
+	row := db.QueryRow(query, author, repository, relativePath)
+	err = row.Scan(&content, &title)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return "", "", fmt.Errorf("document not found")
+		}
+		return "", "", fmt.Errorf("database query failed: %w", err)
+	}
+
+	return content, title, nil
 }

@@ -1,18 +1,18 @@
 ## List All Docs For a Project
 
-$ nman list n26/valium # List all docs available in the n26/valium project
+$ nman list n26/repo # List all docs available in the n26/repo project
 
-This is a list of all the documentation available in the **n26/valium** project. Each entry includes the title of the document and its path within the project. Use this list to quickly find and access specific documents.
+This is a list of all the documentation available in the **n26/repo** project. Each entry includes the title of the document and its path within the project. Use this list to quickly find and access specific documents.
 
 ---
-project: n26/valium
+project: n26/repo
 docs: # formatted as "Title: Path"
   - Publishing: 'Authoring Docs/Publishing.md'
   - Private Repositories: 'Teams/Private Repositories.md'
 ---
 
 View full content of a specific doc (e.g., Publishing):
-`$ nman view n26/valium "Authoring Docs/Publishing.md"`
+`$ nman view n26/repo "Authoring Docs/Publishing.md"`
 
 +++ +++
 
@@ -30,7 +30,7 @@ docs:
 ---
 
 List docs of a specific project (e.g., valium):
-`$ nman list n26/valium`
+`$ nman list n26/repo`
 
 +++ +++
 
@@ -42,7 +42,7 @@ This is a list of all documentation installed. Use this list to discover project
 
 ---
 docs:
-  - n26/valium
+  - n26/repo
   - another-org/some-project
 ---
 

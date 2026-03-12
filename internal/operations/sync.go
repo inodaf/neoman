@@ -187,7 +187,7 @@ func parseMarkdownTitle(content string, filename string) string {
 // getDocPageLastModified queries the database to retrieve the last_modified_at
 // timestamp for a document. Returns sql.ErrNoRows if document doesn't exist.
 func getDocPageLastModified(db *sql.DB, author, repo, relPath string) (time.Time, error) {
-	query := `SELECT last_modified_at FROM docpages 
+	query := `SELECT last_modified_at FROM docpages
 	          WHERE author = ? AND repository = ? AND relative_path = ?`
 
 	var lastModified time.Time
@@ -198,24 +198,22 @@ func getDocPageLastModified(db *sql.DB, author, repo, relPath string) (time.Time
 
 // insertDocPage inserts a new DocPage record into the database.
 func insertDocPage(db *sql.DB, doc models.DocPage) error {
-	query := `INSERT INTO docpages 
+	query := `INSERT INTO docpages
 	          (author, repository, relative_path, title, content, last_modified_at, vector)
 	          VALUES (?, ?, ?, ?, ?, ?, NULL)`
 
-	_, err := db.Exec(query, doc.Author, doc.Repository, doc.RelativePath,
-		doc.Title, doc.Content, doc.LastModifiedAt)
+	_, err := db.Exec(query, doc.Author, doc.Repository, doc.RelativePath, doc.Title, doc.Content, doc.LastModifiedAt)
 
 	return err
 }
 
 // updateDocPage updates an existing DocPage record in the database.
 func updateDocPage(db *sql.DB, doc models.DocPage) error {
-	query := `UPDATE docpages 
+	query := `UPDATE docpages
 	          SET title = ?, content = ?, last_modified_at = ?
 	          WHERE author = ? AND repository = ? AND relative_path = ?`
 
-	_, err := db.Exec(query, doc.Title, doc.Content, doc.LastModifiedAt,
-		doc.Author, doc.Repository, doc.RelativePath)
+	_, err := db.Exec(query, doc.Title, doc.Content, doc.LastModifiedAt, doc.Author, doc.Repository, doc.RelativePath)
 
 	return err
 }
@@ -224,7 +222,7 @@ func updateDocPage(db *sql.DB, doc models.DocPage) error {
 // no longer exist in the filesystem.
 func cleanupStaleEntries(db *sql.DB, author, repo string, filesOnDisk map[string]bool) error {
 	// Query all documents for this repository
-	query := `SELECT relative_path FROM docpages 
+	query := `SELECT relative_path FROM docpages
 	          WHERE author = ? AND repository = ?`
 
 	rows, err := db.Query(query, author, repo)
@@ -247,7 +245,7 @@ func cleanupStaleEntries(db *sql.DB, author, repo string, filesOnDisk map[string
 	}
 
 	// Delete entries that are no longer on disk
-	deleteQuery := `DELETE FROM docpages 
+	deleteQuery := `DELETE FROM docpages
 	                WHERE author = ? AND repository = ? AND relative_path = ?`
 
 	for _, relPath := range relPaths {
