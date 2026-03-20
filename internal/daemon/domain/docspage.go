@@ -4,21 +4,27 @@ import (
 	"fmt"
 	"path"
 	"regexp"
+	"strings"
 	"time"
 )
 
-func NewDocsPage(author, repo, title, relPath string) (*DocsPage, error) {
-	if author == "" || repo == "" || title == "" {
-		return nil, fmt.Errorf("author, repo, and title must be provided")
+func NewDocsPage(author, repo, content, relPath string) (*DocsPage, error) {
+	if author == "" || repo == "" || content == "" {
+		return nil, fmt.Errorf("author, repo, and content must be provided")
 	}
 
 	page := &DocsPage{
-		Title:      title,
 		Author:     author,
 		Repository: repo,
+		Content:    content,
 	}
 
 	err := page.SetRelativePath(relPath)
+	if err != nil {
+		return nil, err
+	}
+	
+	err = page.SetTitle()
 	if err != nil {
 		return nil, err
 	}
@@ -34,6 +40,28 @@ type DocsPage struct {
 	RelativePath   string
 	LastModifiedAt time.Time
 	Vector         *map[int]float32
+}
+
+func (p *DocsPage) SetTitle() error {
+	if p.Content == "" {
+		return fmt.Errorf("unable to infer title with no content")
+	}
+	
+	lines := strings.Split(p.Content, "\n")
+	for _, line := range lines {
+		content, found := strings.CutPrefix(line, "# ")
+		if found {
+			p.Title = content
+			break
+		}
+	}
+	
+	if p.RelativePath == "" {
+		return fmt.Errorf("unable to infer title with no relative path")
+	}
+	
+	p.Title = strings.TrimSuffix(path.Base(p.RelativePath), path.Ext(p.RelativePath))
+	return nil
 }
 
 func (p *DocsPage) SetRelativePath(relPath string) error {

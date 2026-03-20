@@ -111,7 +111,7 @@ func addRemoteEntry(input RegistryEntry, registryDir string) error {
 
 	defer os.Chdir(wd)
 
-	err = git.Clone(input.Owner, input.Project, git.GitRemoteProviderGitHub)
+	err = git.Clone(input.Owner, input.Project, git.NewGitHubClient())
 	if err != nil {
 		return errors.New("could not copy documentation from remote")
 	}

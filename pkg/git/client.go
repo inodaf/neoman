@@ -2,10 +2,7 @@ package git
 
 import (
 	"errors"
-	"fmt"
-	"net/url"
 	"os/exec"
-	"strings"
 
 	"github.com/inodaf/neoman/pkg/config"
 )
@@ -41,19 +38,13 @@ func IsRepository() (bool, error) {
 // To preserve disk space and improve download speed only the
 // last commit is downloaded. It returns [ErrGitNotInstalled] if "git" is not
 // located in PATH.
-func Clone(author, repo string, provider GitRemoteProvider) error {
+func Clone(author, repo string, provider GitRemote) error {
 	binPath, err := exec.LookPath("git")
 	if err != nil {
 		return ErrGitNotInstalled
 	}
 
-	var sshURL = url.URL{
-		User: url.User("git"),
-		Path: fmt.Sprintf("%s.git", repo),
-		Host: fmt.Sprintf("%s:%s", provider, author),
-	}
-
-	cloneURL := strings.Replace(sshURL.String(), "//", "", 1)
+	cloneURL := provider.CloneURL(author, repo)
 	_, err = exec.Command(binPath, "clone", "--filter=blob:none", "--no-checkout", "--depth", "1", cloneURL).Output()
 	return err
 }

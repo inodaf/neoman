@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/inodaf/neoman/internal/daemon/usecase"
+	"github.com/inodaf/neoman/internal/daemon/worker"
 )
 
 func NewHttpController(useCase *usecase.UseCase) *http.ServeMux {
@@ -17,4 +18,5 @@ func NewHttpController(useCase *usecase.UseCase) *http.ServeMux {
 
 type controller struct {
 	useCase *usecase.UseCase
+	worker  *worker.Worker
 }

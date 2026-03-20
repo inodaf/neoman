@@ -16,5 +16,5 @@ type RemoteDocs struct {
 	Source     RemoteSource
 	Author     string
 	Repository string
+	Indexing   bool
 }
-

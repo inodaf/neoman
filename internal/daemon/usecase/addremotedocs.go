@@ -11,20 +11,13 @@ type AddDocsInput struct {
 	Repository string
 }
 
-type AddDocsError error
-
-var ErrAuthorRequired AddDocsError = fmt.Errorf("author is required")
-var ErrRepositoryRequired AddDocsError = fmt.Errorf("repository is required")
-var ErrDocsAlreadyExist AddDocsError = fmt.Errorf("docs already exist")
-var ErrDocsDirNotFound AddDocsError = fmt.Errorf("docs dir not found in repo")
-
-func (u *UseCase) AddRemoteDocs(input *AddDocsInput) AddDocsError {
+func (u *UseCase) AddRemoteDocs(input AddDocsInput) error {
 	if input.Author == "" {
-		return ErrAuthorRequired
+		return ErrAddRemoteDocsAuthorRequired
 	}
 
 	if input.Repository == "" {
-		return ErrRepositoryRequired
+		return ErrAddRemoteDocsRepositoryRequired
 	}
 
 	exists, err := u.docsRepository.Exists(input.Author, input.Repository)
@@ -33,12 +26,12 @@ func (u *UseCase) AddRemoteDocs(input *AddDocsInput) AddDocsError {
 	}
 
 	if exists {
-		return ErrDocsAlreadyExist
+		return ErrAddRemoteDocsAlreadyExist
 	}
 
 	err = u.gitRemoteClient.IsDocsDirPresent(input.Author, input.Repository)
 	if err != nil {
-		return ErrDocsDirNotFound
+		return ErrAddRemoteDocsDirNotFound
 	}
 
 	docs := domain.NewRemoteDocs(
@@ -47,6 +40,11 @@ func (u *UseCase) AddRemoteDocs(input *AddDocsInput) AddDocsError {
 		domain.RemoteSource(u.gitRemoteClient.ProviderName()),
 	)
 	
+	err = u.sourceRegistry.Download(*docs)
+	if err != nil {
+		return err
+	}
+	
 	err = u.docsRepository.Save(*docs)
 	if err != nil {
 		return err
@@ -54,3 +52,10 @@ func (u *UseCase) AddRemoteDocs(input *AddDocsInput) AddDocsError {
 
 	return nil
 }
+
+var (
+	ErrAddRemoteDocsAuthorRequired = fmt.Errorf("author is required")
+	ErrAddRemoteDocsRepositoryRequired = fmt.Errorf("repository is required")
+	ErrAddRemoteDocsAlreadyExist = fmt.Errorf("docs already exist")
+	ErrAddRemoteDocsDirNotFound = fmt.Errorf("docs dir not found in repo")
+)
