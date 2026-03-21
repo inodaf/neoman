@@ -21,12 +21,12 @@ func (w *Worker) IndexPages(input IndexPagesInput) error {
 	if err != nil {
 		return err
 	}
-	
+
 	err = w.docsRepository.StartIndexing(input.Author, input.Repository)
 	if err != nil {
 		return err
 	}
-	defer w.docsRepository.StopIndexing(input.Author, input.Repository)	
+	defer w.docsRepository.StopIndexing(input.Author, input.Repository)
 
 	for _, content := range files {
 		docsPage, err := domain.NewDocsPage(docs.Author, docs.Repository, content.Text, content.RelPath)
@@ -40,7 +40,7 @@ func (w *Worker) IndexPages(input IndexPagesInput) error {
 			slog.Error("unable to set last modified at", "error", err)
 			continue
 		}
-		
+
 		err = w.docsPageRepository.Save(*docsPage)
 		if err != nil {
 			slog.Error("unable to save docs page", "error", err)

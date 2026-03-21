@@ -32,7 +32,7 @@ func (c *controller) AddDocs(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Unable to add docs", http.StatusInternalServerError)
 		return
 	}
-	
+
 	err = c.worker.IndexPages(worker.IndexPagesInput{
 		Author:     author,
 		Repository: repo,

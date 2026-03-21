@@ -142,7 +142,7 @@ func (r *FsSourceRegistry) GetAllContents(docs domain.RemoteDocs) ([]RegistryCon
 			}
 
 			c = append(c, RegistryContent{
-				Text:        string(content),
+				Text:           string(content),
 				RelPath:        relPath,
 				LastModifiedAt: fileInfo.ModTime(),
 			})

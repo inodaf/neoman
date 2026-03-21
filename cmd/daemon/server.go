@@ -6,7 +6,7 @@ import (
 	"net"
 	"net/http"
 	"os"
-		
+
 	"github.com/inodaf/neoman/pkg/config"
 )
 
@@ -31,6 +31,6 @@ func ServeIpc(mux *http.ServeMux) error {
 		slog.Error("unable to serve socket", "err", err)
 		return fmt.Errorf("could not serve Unix Socket")
 	}
-	
+
 	return nil
 }

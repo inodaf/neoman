@@ -39,23 +39,23 @@ func (u *UseCase) AddRemoteDocs(input AddDocsInput) error {
 		input.Repository,
 		domain.RemoteSource(u.gitRemoteClient.ProviderName()),
 	)
-	
+
 	err = u.sourceRegistry.Download(*docs)
 	if err != nil {
 		return err
 	}
-	
+
 	err = u.docsRepository.Save(*docs)
 	if err != nil {
 		return err
-	}	
+	}
 
 	return nil
 }
 
 var (
-	ErrAddRemoteDocsAuthorRequired = fmt.Errorf("author is required")
+	ErrAddRemoteDocsAuthorRequired     = fmt.Errorf("author is required")
 	ErrAddRemoteDocsRepositoryRequired = fmt.Errorf("repository is required")
-	ErrAddRemoteDocsAlreadyExist = fmt.Errorf("docs already exist")
-	ErrAddRemoteDocsDirNotFound = fmt.Errorf("docs dir not found in repo")
+	ErrAddRemoteDocsAlreadyExist       = fmt.Errorf("docs already exist")
+	ErrAddRemoteDocsDirNotFound        = fmt.Errorf("docs dir not found in repo")
 )

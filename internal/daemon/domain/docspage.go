@@ -23,7 +23,7 @@ func NewDocsPage(author, repo, content, relPath string) (*DocsPage, error) {
 	if err != nil {
 		return nil, err
 	}
-	
+
 	err = page.SetTitle()
 	if err != nil {
 		return nil, err
@@ -46,7 +46,7 @@ func (p *DocsPage) SetTitle() error {
 	if p.Content == "" {
 		return fmt.Errorf("unable to infer title with no content")
 	}
-	
+
 	lines := strings.Split(p.Content, "\n")
 	for _, line := range lines {
 		content, found := strings.CutPrefix(line, "# ")
@@ -55,11 +55,11 @@ func (p *DocsPage) SetTitle() error {
 			break
 		}
 	}
-	
+
 	if p.RelativePath == "" {
 		return fmt.Errorf("unable to infer title with no relative path")
 	}
-	
+
 	p.Title = strings.TrimSuffix(path.Base(p.RelativePath), path.Ext(p.RelativePath))
 	return nil
 }
@@ -82,7 +82,7 @@ func (p *DocsPage) SetLastModifiedAt(newDate time.Time) error {
 	if newDate.After(p.LastModifiedAt) == false || newDate.Equal(p.LastModifiedAt) == false {
 		return fmt.Errorf("new date must be after the current last modified date")
 	}
-	
+
 	p.LastModifiedAt = newDate
 	return nil
 }

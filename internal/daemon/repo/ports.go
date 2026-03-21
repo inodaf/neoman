@@ -10,7 +10,7 @@ type DocsRepository interface {
 	Save(entry domain.RemoteDocs) error
 	Exists(author, repository string) (bool, error)
 	GetOne(author, repository string) (domain.RemoteDocs, error)
-	
+
 	StartIndexing(author, repository string) error
 	StopIndexing(author, repository string) error
 }
@@ -26,7 +26,7 @@ type SourceRegistry interface {
 }
 
 type RegistryContent struct {
-	Text        string
+	Text           string
 	RelPath        string
 	LastModifiedAt time.Time
 }
