@@ -8,6 +8,7 @@ Neoman follows a **clean architecture** pattern to separate concerns and maintai
 graph LR
     App["App/TUI<br/>(External Client)"]
     
+
     subgraph Daemon["Internal Daemon<br/>Clean Architecture"]
         Controller["Controller Layer<br/>(HTTP handlers)"]
         UseCase["UseCase Layer<br/>(Business logic)"]
@@ -23,8 +24,6 @@ graph LR
     
     App -->|HTTP/Unix Socket| Controller
     Daemon -->|provides API| App
-    
-    PkgUtils["pkg/ Utilities<br/>(git, config, browser)<br/>Accessible to: UseCase, Controller,<br/>and interface implementations"]
 ```
 
 **Note on pkg/ Utilities**: The `/pkg/` shared utilities are accessible to the UseCase layer, Controller layer, and interface implementations (such as repository implementations and workers). However, domain models must remain independent and should not depend on `pkg/` utilities.
