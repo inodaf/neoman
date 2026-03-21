@@ -46,4 +46,4 @@ go build -o ./bin/nmand cmd/daemon/main.go
 4. Run `go test` to ensure tests pass
 5. Verify builds: `make all`
 6. Check that changes align with existing code style in relevant package
-7. Commit with meaningful messages E.g: "[Update] Daemon/UseCase: List documentation now return doc titles"
+7. Commit with meaningful messages E.g: "[Add|Update|Remove] Daemon/UseCase: List documentation now return doc titles"
