@@ -11,11 +11,11 @@ import (
 )
 
 func main() {
-	db, err := management.NewSQLiteDatabase()
+	dbConn, err := InitDB()
 	if err != nil {
 		panic(err)
 	}
-	
+
 	ghClient := git.NewGitHubClient()
 	fsSourceRegistry := repo.NewFsSourceRegistry(ghClient)
 	useCase := usecase.NewUseCase(nil, ghClient, fsSourceRegistry)
@@ -34,7 +34,7 @@ func main() {
 
 	go func() {
 		defer wg.Done()
-		management.SocketServeTCP(db)
+		management.SocketServeTCP(dbConn)
 	}()
 
 	wg.Wait()
