@@ -4,56 +4,30 @@ Neoman follows a **clean architecture** pattern to separate concerns and maintai
 
 ## High-Level Overview
 
+```mermaid
+graph LR
+    App["App/TUI<br/>(External Client)"]
+    
+    subgraph Daemon["Internal Daemon<br/>Clean Architecture"]
+        Controller["Controller Layer<br/>(HTTP handlers)"]
+        UseCase["UseCase Layer<br/>(Business logic)"]
+        Domain["Domain Layer<br/>(Business rules)"]
+        Repository["Repository Layer<br/>(Ports/Interfaces)"]
+        Worker["Worker Layer<br/>(Async operations)"]
+        
+        Controller -->|calls| UseCase
+        UseCase -->|uses| Domain
+        UseCase -->|calls| Repository
+        Worker -->|calls| Repository
+    end
+    
+    App -->|HTTP/Unix Socket| Controller
+    Daemon -->|provides API| App
+    
+    PkgUtils["pkg/ Utilities<br/>(git, config, browser)<br/>Accessible to: UseCase, Controller,<br/>and interface implementations"]
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                   External Clients                           │
-│                  (CLI, Browser, TUI)                         │
-└────────────────────┬────────────────────────────────────────┘
-                     │
-                     │ HTTP / Unix Domain Socket
-                     │
-        ┌────────────▼──────────────────┐
-        │     /internal/daemon/          │
-        │   (Clean Architecture)         │
-        │                                │
-        │  ┌──────────────────────────┐  │
-        │  │   Controller Layer       │  │  HTTP endpoints,
-        │  │   (HTTP handlers)        │  │  request/response
-        │  └──────────────┬───────────┘  │
-        │                 │               │
-        │  ┌──────────────▼───────────┐  │
-        │  │   UseCase Layer          │  │  Business logic,
-        │  │   (Operations)           │  │  orchestration
-        │  └──────────────┬───────────┘  │
-        │                 │               │
-        │  ┌──────────────▼───────────┐  │
-        │  │   Domain Layer           │  │  Core models,
-        │  │   (Business Rules)       │  │  validations
-        │  └──────────────┬───────────┘  │
-        │                 │               │
-        │  ┌──────────────▼───────────┐  │
-        │  │   Repository Layer       │  │  Data access,
-        │  │   (Ports/Interfaces)     │  │  persistence
-        │  └──────────────┬───────────┘  │
-        │                 │               │
-        │  ┌──────────────▼───────────┐  │
-        │  │   Worker Layer           │  │  Background jobs,
-        │  │   (Async Operations)     │  │  scheduled tasks
-        │  └──────────────────────────┘  │
-        │                                │
-        │  /pkg/ - Shared utilities      │
-        │  (git, config, browser)        │
-        └────────────────────────────────┘
-                     │
-                     │
-        ┌────────────▼──────────────────┐
-        │     /internal/app/             │
-        │   (TUI/Frontend - Planned)     │
-        │                                │
-        │  - Uses daemon HTTP API        │
-        │  - Renders terminal UI         │
-        └────────────────────────────────┘
-```
+
+**Note on pkg/ Utilities**: The `/pkg/` shared utilities are accessible to the UseCase layer, Controller layer, and interface implementations (such as repository implementations and workers). However, domain models must remain independent and should not depend on `pkg/` utilities.
 
 ## Layers Explained
 
