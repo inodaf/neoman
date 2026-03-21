@@ -12,6 +12,7 @@ func NewHttpController(useCase *usecase.UseCase) *http.ServeMux {
 	ctrl := &controller{useCase: useCase}
 
 	mux.HandleFunc("POST /add/{author}/{repo}", ctrl.AddDocs)
+	mux.HandleFunc("GET /ping", ctrl.Ping)
 
 	return mux
 }
