@@ -30,3 +30,11 @@ type RegistryContent struct {
 	RelPath        string
 	LastModifiedAt time.Time
 }
+
+type JobRepository interface {
+	Save(job *domain.Job) error
+	GetPending(limit int) ([]domain.Job, error)
+	GetAll() ([]domain.Job, error)
+	Update(job *domain.Job) error
+	Delete(jobID string) error
+}

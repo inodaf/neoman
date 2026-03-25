@@ -1,10 +1,10 @@
 .PHONY: all
 all: ./bin/nman ./bin/nmand
 
-./bin/nman:
+./bin/nman: ./internal/**/*.go
 	@go build -o ./bin/nman ./cmd/nman
 
-./bin/nmand:
+./bin/nmand: ./internal/**/*.go
 	@go build -o ./bin/nmand ./cmd/daemon
 
 .PHONY: migration

@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/inodaf/neoman/internal/daemon/usecase"
-	"github.com/inodaf/neoman/internal/daemon/worker"
 )
 
 func (c *controller) AddDocs(w http.ResponseWriter, r *http.Request) {
@@ -33,10 +32,5 @@ func (c *controller) AddDocs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = c.worker.IndexPages(worker.IndexPagesInput{
-		Author:     author,
-		Repository: repo,
-	})
-
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusAccepted)
 }

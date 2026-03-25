@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"encoding/json"
 	"fmt"
 
 	"github.com/inodaf/neoman/internal/daemon/domain"
@@ -50,12 +51,32 @@ func (u *UseCase) AddRemoteDocs(input AddDocsInput) error {
 		return err
 	}
 
+	jobData, err := json.Marshal(map[string]string{
+		"author":     input.Author,
+		"repository": input.Repository,
+	})
+	if err != nil {
+		return fmt.Errorf("failed to marshal job payload: %w", err)
+	}
+
+	job, err := domain.NewJob(domain.JobTypeIndexPages, string(jobData))
+	if err != nil {
+		return fmt.Errorf("failed to create indexing job: %w", err)
+	}
+
+	err = u.jobRepository.Save(job)
+	if err != nil {
+		return fmt.Errorf("failed to save indexing job: %w", err)
+	}
+
 	return nil
 }
 
 var (
-	ErrAddRemoteDocsAuthorRequired     = fmt.Errorf("author is required")
-	ErrAddRemoteDocsRepositoryRequired = fmt.Errorf("repository is required")
-	ErrAddRemoteDocsAlreadyExist       = fmt.Errorf("docs already exist")
-	ErrAddRemoteDocsDirNotFound        = fmt.Errorf("docs dir not found in repo")
+	ErrAddRemoteDocsAuthorRequired        = fmt.Errorf("author is required")
+	ErrAddRemoteDocsRepositoryRequired    = fmt.Errorf("repository is required")
+	ErrAddRemoteDocsAlreadyExist          = fmt.Errorf("docs already exist")
+	ErrAddRemoteDocsDirNotFound           = fmt.Errorf("docs dir not found in repo")
+	ErrAddRemoteDocsIndexingJobFailed     = fmt.Errorf("failed to create indexing job")
+	ErrAddRemoteDocsIndexingJobSaveFailed = fmt.Errorf("failed to save indexing job")
 )

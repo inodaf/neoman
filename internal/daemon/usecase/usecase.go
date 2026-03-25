@@ -7,18 +7,25 @@ import (
 
 func NewUseCase(
 	docsRepository repo.DocsRepository,
+	docsPageRepository repo.DocsPageRepository,
 	gitRemoteClient git.GitRemote,
 	sourceRegistry repo.SourceRegistry,
+	jobRepository repo.JobRepository,
+
 ) *UseCase {
 	return &UseCase{
-		docsRepository:  docsRepository,
-		sourceRegistry:  sourceRegistry,
-		gitRemoteClient: gitRemoteClient,
+		docsRepository:     docsRepository,
+		docsPageRepository: docsPageRepository,
+		sourceRegistry:     sourceRegistry,
+		gitRemoteClient:    gitRemoteClient,
+		jobRepository:      jobRepository,
 	}
 }
 
 type UseCase struct {
-	docsRepository  repo.DocsRepository
-	sourceRegistry  repo.SourceRegistry
-	gitRemoteClient git.GitRemote
+	docsRepository     repo.DocsRepository
+	docsPageRepository repo.DocsPageRepository
+	sourceRegistry     repo.SourceRegistry
+	gitRemoteClient    git.GitRemote
+	jobRepository      repo.JobRepository
 }
