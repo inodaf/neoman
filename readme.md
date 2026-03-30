@@ -9,6 +9,8 @@ A modern documentation reader inspired by Unix `man` pages, designed to make sof
 
 ## Features
 
+**Agentic Engineering** - Query documentation semantically, retrieve context for coding agents, and track token usage across your docs. Built for AI-assisted development workflows.
+
 **Zero-Deployment Documentation** - Focus on writing great docs, not managing infrastructure. No servers to maintain, no hosting costs. Just write Markdown and push to Git.
 
 **Git-Native Workflow** - Documentation stays in sync with your code automatically. Push to any Git provider (GitHub, GitLab, etc.) and readers get updates instantly.
