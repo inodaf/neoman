@@ -18,14 +18,14 @@ View full content of a specific doc (e.g., Publishing):
 
 ## List All Projects with Docs in an Org/User
 
-$ nman list n26/* # List all available projects with documentation under the n26 organization
+$ nman list n26 # List all available projects with documentation under the n26 organization
 
 This is a list of all projects under the **n26** organization that have available documentation. Use this list to explore the different projects and their associated documentation.
 
 ---
 author: n26
 docs:
-  - valium
+  - repo
   - another-project
 ---
 

@@ -11,6 +11,8 @@ A modern documentation reader inspired by Unix `man` pages, designed to make sof
 
 **Agentic Engineering** - Query documentation semantically, retrieve context for coding agents, and track token usage across your docs. Built for AI-assisted development workflows.
 
+**Local & Secure** - Everything runs locally on your machine. No data leaves your device, perfect for private organizational documentation.
+
 **Zero-Deployment Documentation** - Focus on writing great docs, not managing infrastructure. No servers to maintain, no hosting costs. Just write Markdown and push to Git.
 
 **Git-Native Workflow** - Documentation stays in sync with your code automatically. Push to any Git provider (GitHub, GitLab, etc.) and readers get updates instantly.
@@ -18,8 +20,6 @@ A modern documentation reader inspired by Unix `man` pages, designed to make sof
 **Convention Over Configuration** - Create a `/docs` directory with an `index.md` file and you're ready. No complex setup required.
 
 **Unified Documentation Hub** - All your organization's documentation in one searchable place. Search across all docs or filter by specific projects.
-
-**Local & Secure** - Everything runs locally on your machine. No data leaves your device, perfect for private organizational documentation.
 
 ## Requirements
 
