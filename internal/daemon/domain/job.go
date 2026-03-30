@@ -67,8 +67,9 @@ func (j *Job) MarkFailed(errorMsg string) {
 
 func (j *Job) ScheduleRetry() {
 	j.AttemptCount++
-	backoffSeconds := max(int(math.Pow(2, float64(j.AttemptCount))), 1800)
+	backoffSeconds := min(int(math.Pow(2, float64(j.AttemptCount))), 1800)
 	nextRetry := time.Now().Add(time.Duration(backoffSeconds) * time.Second)
+	j.Status = JobStatusPending
 	j.NextRetryAt = &nextRetry
 }
 

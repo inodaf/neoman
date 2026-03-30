@@ -9,10 +9,11 @@ import (
 type IndexPagesInput struct {
 	Author     string
 	Repository string
+	Source     domain.RemoteSource
 }
 
 func (w *Worker) IndexPages(input IndexPagesInput) error {
-	docs, err := w.docsRepository.GetOne(input.Author, input.Repository)
+	docs, err := w.docsRepository.GetOne(input.Author, input.Repository, input.Source)
 	if err != nil {
 		return err
 	}
@@ -22,11 +23,19 @@ func (w *Worker) IndexPages(input IndexPagesInput) error {
 		return err
 	}
 
-	err = w.docsRepository.StartIndexing(input.Author, input.Repository)
+	docs.StartIndexing()
+	err = w.docsRepository.Save(docs)
 	if err != nil {
 		return err
 	}
-	defer w.docsRepository.StopIndexing(input.Author, input.Repository)
+
+	defer func() {
+		docs.StopIndexing()
+		err := w.docsRepository.Save(docs)
+		if err != nil {
+			slog.Error("unable to save docs after indexing", "error", err)
+		}
+	}()
 
 	for _, content := range files {
 		docsPage, err := domain.NewDocsPage(docs.Author, docs.Repository, content.Text, content.RelPath)

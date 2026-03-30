@@ -6,7 +6,8 @@ CREATE TABLE IF NOT EXISTS docpages (
     title TEXT NOT NULL,
     content TEXT NOT NULL,
     last_modified_at DATETIME NOT NULL,
-    vector BLOB
+    vector BLOB,
+    PRIMARY KEY (author, repository, relative_path)
 );
 
 -- +goose Down

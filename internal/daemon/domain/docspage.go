@@ -52,7 +52,7 @@ func (p *DocsPage) SetTitle() error {
 		content, found := strings.CutPrefix(line, "# ")
 		if found {
 			p.Title = content
-			break
+			return nil
 		}
 	}
 
@@ -79,7 +79,7 @@ func (p *DocsPage) SetRelativePath(relPath string) error {
 }
 
 func (p *DocsPage) SetLastModifiedAt(newDate time.Time) error {
-	if newDate.After(p.LastModifiedAt) == false || newDate.Equal(p.LastModifiedAt) == false {
+	if newDate.Before(p.LastModifiedAt) && newDate.Equal(p.LastModifiedAt) == false {
 		return fmt.Errorf("new date must be after the current last modified date")
 	}
 

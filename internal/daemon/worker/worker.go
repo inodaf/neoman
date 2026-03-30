@@ -14,7 +14,7 @@ func NewWorker(
 		docsPageRepository: docsPageRepository,
 		sourceRegistry:     sourceRegistry,
 		docsRepository:     docsRepository,
-		jobRepository:     jobRepository,
+		jobRepository:      jobRepository,
 	}
 }
 
@@ -22,5 +22,5 @@ type Worker struct {
 	sourceRegistry     repo.SourceRegistry
 	docsPageRepository repo.DocsPageRepository
 	docsRepository     repo.DocsRepository
-	jobRepository     repo.JobRepository
+	jobRepository      repo.JobRepository
 }

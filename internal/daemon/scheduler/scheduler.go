@@ -11,13 +11,13 @@ import (
 func NewScheduler(worker *worker.Worker) *Scheduler {
 	return &Scheduler{
 		worker: worker,
-		ticker:  time.NewTicker(5 * time.Second),
+		ticker: time.NewTicker(5 * time.Second),
 	}
 }
 
 type Scheduler struct {
 	worker *worker.Worker
-	ticker  *time.Ticker
+	ticker *time.Ticker
 }
 
 func (s *Scheduler) Run(ctx context.Context) error {

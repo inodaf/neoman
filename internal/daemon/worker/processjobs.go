@@ -70,6 +70,7 @@ func (w *Worker) processIndexPagesJob(ctx context.Context, job domain.Job) error
 	var payload struct {
 		Author     string `json:"author"`
 		Repository string `json:"repository"`
+		Source     string `json:"source"`
 	}
 
 	err := json.Unmarshal([]byte(job.Payload), &payload)
@@ -80,5 +81,6 @@ func (w *Worker) processIndexPagesJob(ctx context.Context, job domain.Job) error
 	return w.IndexPages(IndexPagesInput{
 		Author:     payload.Author,
 		Repository: payload.Repository,
+		Source:     domain.RemoteSource(payload.Source),
 	})
 }

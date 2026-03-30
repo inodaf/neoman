@@ -97,6 +97,7 @@ func (r *FsSourceRegistry) GetAllContents(docs domain.RemoteDocs) ([]RegistryCon
 		return nil, fmt.Errorf("docs does not exist")
 	}
 
+	// all md or mdx
 	matches, err := filepath.Glob(path.Join(docsDir, "**/*.md"))
 	if err != nil {
 		return nil, fmt.Errorf("could not locate documentation files")
@@ -107,7 +108,7 @@ func (r *FsSourceRegistry) GetAllContents(docs domain.RemoteDocs) ([]RegistryCon
 
 	contents := make([]RegistryContent, 0, len(matches))
 	for _, docPath := range matches {
-		go func(p string, c []RegistryContent) {
+		go func(p string) {
 			defer wg.Done()
 
 			file, err := os.Open(docPath)
@@ -141,13 +142,15 @@ func (r *FsSourceRegistry) GetAllContents(docs domain.RemoteDocs) ([]RegistryCon
 				return
 			}
 
-			c = append(c, RegistryContent{
+			contents = append(contents, RegistryContent{
 				Text:           string(content),
 				RelPath:        relPath,
 				LastModifiedAt: fileInfo.ModTime(),
 			})
-		}(docPath, contents)
+		}(docPath)
 	}
+	
+	wg.Wait()	
 
 	return contents, nil
 }

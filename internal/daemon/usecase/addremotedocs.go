@@ -54,6 +54,7 @@ func (u *UseCase) AddRemoteDocs(input AddDocsInput) error {
 	jobData, err := json.Marshal(map[string]string{
 		"author":     input.Author,
 		"repository": input.Repository,
+		"source":     string(docs.Source),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to marshal job payload: %w", err)

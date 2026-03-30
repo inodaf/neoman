@@ -26,10 +26,11 @@ func main() {
 	ghClient := git.NewGitHubClient()
 	jobRepository := repo.NewJobRepository(db)
 	fsSourceRegistry := repo.NewFsSourceRegistry(ghClient)
+	docsRepository := repo.NewDocsRepository(db)
+	docsPageRepository := repo.NewDocsPageRepository(db)
 
-	// TODO: DocsRepository and DocsPageRepository implementations need to be created
-	worker := worker.NewWorker(nil, fsSourceRegistry, nil, jobRepository)
-	useCase := usecase.NewUseCase(nil, nil, ghClient, fsSourceRegistry, jobRepository)
+	worker := worker.NewWorker(docsPageRepository, fsSourceRegistry, docsRepository, jobRepository)
+	useCase := usecase.NewUseCase(docsRepository, docsPageRepository, ghClient, fsSourceRegistry, jobRepository)
 	scheduler := scheduler.NewScheduler(worker)
 
 	mux := controller.NewHttpController(useCase, jobRepository)
