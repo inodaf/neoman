@@ -15,6 +15,7 @@ type DocsRepository interface {
 type DocsPageRepository interface {
 	Save(page domain.DocsPage) error
 	SaveMany(pages []domain.DocsPage) error
+	FindAll(author, repository string) ([]domain.DocsPage, error)
 }
 
 type SourceRegistry interface {

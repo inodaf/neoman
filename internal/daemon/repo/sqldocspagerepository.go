@@ -51,3 +51,40 @@ func (r *docsPageRepository) SaveMany(pages []domain.DocsPage) error {
 	}
 	return nil
 }
+
+func (r *docsPageRepository) FindAll(author, repository string) ([]domain.DocsPage, error) {
+	query := `
+		SELECT author, repository, relative_path, title, last_modified_at
+		FROM docpages
+		WHERE author = ? AND repository = ?
+		ORDER BY relative_path
+	`
+
+	rows, err := r.db.Query(query, author, repository)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query doc pages: %w", err)
+	}
+	defer rows.Close()
+
+	var pages []domain.DocsPage
+	for rows.Next() {
+		var page domain.DocsPage
+		err := rows.Scan(
+			&page.Author,
+			&page.Repository,
+			&page.RelativePath,
+			&page.Title,
+			&page.LastModifiedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan doc page: %w", err)
+		}
+		pages = append(pages, page)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating doc pages: %w", err)
+	}
+
+	return pages, nil
+}
