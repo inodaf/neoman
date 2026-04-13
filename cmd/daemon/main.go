@@ -25,9 +25,9 @@ func main() {
 
 	ghClient := git.NewGitHubClient()
 	jobRepository := repo.NewJobRepository(db)
-	fsSourceRegistry := repo.NewFsSourceRegistry(ghClient)
 	docsRepository := repo.NewDocsRepository(db)
 	docsPageRepository := repo.NewDocsPageRepository(db)
+	fsSourceRegistry := repo.NewFsSourceRegistry(ghClient)
 
 	worker := worker.NewWorker(docsPageRepository, fsSourceRegistry, docsRepository, jobRepository)
 	useCase := usecase.NewUseCase(docsRepository, docsPageRepository, ghClient, fsSourceRegistry, jobRepository)
