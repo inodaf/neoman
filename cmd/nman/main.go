@@ -1,17 +1,21 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"net/url"
 	"os"
 	"strings"
 
+	"github.com/inodaf/neoman/internal/app/command"
 	"github.com/inodaf/neoman/internal/management"
 	"github.com/inodaf/neoman/internal/operations"
 )
 
 func main() {
+	cmd := command.New()
+
 	err := management.SocketClientPing()
 	if err != nil {
 		fmt.Println("neoman: Could not connect to daemon")
@@ -24,7 +28,7 @@ func main() {
 	}
 
 	if len(os.Args) == 2 && strings.Count(os.Args[1], "/") == 1 {
-		operations.OpenFromName(os.Args[1])
+		cmd.AddOrOpen(context.TODO(), os.Args[1])
 		return
 	}
 
