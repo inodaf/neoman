@@ -15,7 +15,7 @@ func (c *controller) ListDocPages(w http.ResponseWriter, r *http.Request) {
 	repo := r.PathValue("repo")
 
 	accept := r.Header.Get("Accept")
-	if accept != "" && accept != "application/yaml" {
+	if accept != "" && accept != "application/yaml" && accept != "*/*" {
 		http.Error(w, "Unsupported media type. Use Accept: application/yaml", http.StatusNotAcceptable)
 		return
 	}
