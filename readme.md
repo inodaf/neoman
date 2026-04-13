@@ -1,6 +1,6 @@
 # Neoman
 
-[![GitHub](https://img.shields.io/badge/GitHub-inodaf%2Fneoman-black?logo=github)](https://github.com/inodaf/neoman)
+[![Static Badge](https://img.shields.io/badge/Docs-%24_nman_inodaf%2Fneoman-black)](https://github.com/inodaf/neoman)
 
 A modern documentation reader inspired by Unix `man` pages, designed to make software documentation accessible, searchable, and maintainable.
 
