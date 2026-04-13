@@ -48,7 +48,7 @@ func (w *Worker) processJob(ctx context.Context, job domain.Job) {
 		if err != nil {
 			slog.Error("failed to delete completed job", "job_id", job.ID, "error", err)
 		}
-		slog.Info("job completed successfully", "job_id", job.ID)
+		slog.Info("job completed", "job_id", job.ID)
 		return
 	}
 
