@@ -27,15 +27,15 @@ type Job struct {
 	JobType      JobType
 	Payload      string // JSON string
 	Status       JobStatus
-	LastError    *string
 	AttemptCount int
 	CreatedAt    time.Time
+	LastError    *string
 	NextRetryAt  *time.Time
 }
 
 func NewJob(jobType JobType, payload string) (*Job, error) {
 	if jobType == "" {
-		return nil, errors.New("job_type cannot be empty")
+		return nil, errors.New("jobType cannot be empty")
 	}
 	if payload == "" {
 		return nil, errors.New("payload cannot be empty")
