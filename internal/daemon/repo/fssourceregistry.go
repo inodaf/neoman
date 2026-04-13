@@ -149,8 +149,8 @@ func (r *FsSourceRegistry) GetAllContents(docs domain.RemoteDocs) ([]RegistryCon
 			})
 		}(docPath)
 	}
-	
-	wg.Wait()	
+
+	wg.Wait()
 
 	return contents, nil
 }
