@@ -3,8 +3,6 @@ package main
 import (
 	"context"
 	"fmt"
-	"io"
-	"net/url"
 	"os"
 	"strings"
 
@@ -34,7 +32,11 @@ func main() {
 
 	switch os.Args[1] {
 	case "list":
-		handleListCommand()
+		if len(os.Args) != 3 || strings.Count(os.Args[2], "/") != 1 {
+			fmt.Println("neoman: Usage: nman list <author/repo>")
+			return
+		}
+		cmd.ListPages(context.TODO(), os.Args[2])
 		return
 	case "view":
 		handleViewCommand()
@@ -43,55 +45,6 @@ func main() {
 		fmt.Printf("neoman: '%s' is not a valid command. See 'nman --help'.\n", os.Args[1])
 		return
 	}
-}
-
-// handleListCommand processes the list command with three scenarios:
-// 1. nman list - List all projects
-// 2. nman list org - List projects in organization
-// 3. nman list owner/repo - List documents in project
-func handleListCommand() {
-	var endpoint string
-
-	if len(os.Args) == 2 {
-		// Scenario 1: nman list - List all projects
-		endpoint = "/list"
-	} else if len(os.Args) == 3 {
-		arg := os.Args[2]
-		slashCount := strings.Count(arg, "/")
-
-		if slashCount == 0 {
-			// Scenario 2: nman list org - List projects in organization
-			endpoint = "/list/" + arg
-		} else if slashCount == 1 {
-			// Scenario 3: nman list owner/repo - List documents in project
-			parts := strings.Split(arg, "/")
-			endpoint = "/list/" + parts[0] + "/" + parts[1]
-		} else {
-			fmt.Println("neoman: Invalid argument. Use 'nman list', 'nman list org', or 'nman list org/repo'")
-			return
-		}
-	} else {
-		fmt.Println("neoman: Too many arguments. Use 'nman list', 'nman list org', or 'nman list org/repo'")
-		return
-	}
-
-	// Make HTTP GET request to daemon
-	resource := url.URL{Host: "unix", Scheme: "http", Path: endpoint}
-	resp, err := management.UnixSockClient.Get(resource.String())
-	if err != nil {
-		fmt.Println("neoman: Could not connect to daemon")
-		return
-	}
-	defer resp.Body.Close()
-
-	// Read and display response
-	body, err := io.ReadAll(resp.Body)
-	if err != nil {
-		fmt.Println("neoman: Could not read daemon response")
-		return
-	}
-
-	fmt.Print(string(body))
 }
 
 // handleViewCommand processes the view command
