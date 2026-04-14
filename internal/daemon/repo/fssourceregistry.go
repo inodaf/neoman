@@ -10,6 +10,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/inodaf/neoman/internal/daemon/domain"
@@ -18,6 +19,18 @@ import (
 )
 
 const MAX_FILE_SIZE = 1024 * 1024 * 10 // 10MB
+
+// isMarkdownFile checks if the filename has a markdown extension (.md or .mdx)
+// using case-insensitive matching.
+func isMarkdownFile(filename string) bool {
+	lower := strings.ToLower(filename)
+	return strings.HasSuffix(lower, ".md") || strings.HasSuffix(lower, ".mdx")
+}
+
+// isHiddenFile checks if the filename starts with a dot.
+func isHiddenFile(filename string) bool {
+	return strings.HasPrefix(filename, ".")
+}
 
 func NewFsSourceRegistry(remote git.GitRemote) SourceRegistry {
 	return &FsSourceRegistry{GitRemoteProvider: remote}
@@ -66,27 +79,8 @@ func (r *FsSourceRegistry) Download(docs domain.RemoteDocs) error {
 	return git.SparseCheckout()
 }
 
-// GetAllPaths returns all *.md* file paths from the remote documentation.
+// GetAllPaths returns all Markdown (.md, .mdx) file paths from the remote documentation.
 func (r *FsSourceRegistry) GetAllPaths(docs domain.RemoteDocs) ([]string, error) {
-	registryDir, err := config.DocsRegistryDir()
-	if err != nil {
-		return nil, err
-	}
-
-	docsDir := path.Join(registryDir, "remote", docs.Author, docs.Repository)
-	if _, err := os.Stat(docsDir); errors.Is(err, fs.ErrNotExist) {
-		return nil, fmt.Errorf("docs does not exist")
-	}
-
-	matches, err := filepath.Glob(path.Join(docsDir, "**/*.md"))
-	if err != nil {
-		return nil, fmt.Errorf("could not locate documentation files")
-	}
-
-	return matches, nil
-}
-
-func (r *FsSourceRegistry) GetAllContents(docs domain.RemoteDocs) ([]RegistryContent, error) {
 	registryDir, err := config.DocsRegistryDir()
 	if err != nil {
 		return nil, err
@@ -97,10 +91,39 @@ func (r *FsSourceRegistry) GetAllContents(docs domain.RemoteDocs) ([]RegistryCon
 		return nil, fmt.Errorf("docs does not exist")
 	}
 
-	// all md or mdx
-	matches, err := filepath.Glob(path.Join(docsDir, "**/*.md"))
+	var matches []string
+	err = filepath.WalkDir(docsDir, func(filePath string, entry fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if entry.IsDir() || isHiddenFile(entry.Name()) {
+			return nil
+		}
+		if isMarkdownFile(entry.Name()) {
+			matches = append(matches, filePath)
+		}
+		return nil
+	})
 	if err != nil {
-		return nil, fmt.Errorf("could not locate documentation files")
+		return nil, fmt.Errorf("could not locate documentation files: %w", err)
+	}
+
+	return matches, nil
+}
+
+// GetAllContents reads the content of all Markdown (.md, .mdx) files in the remote
+// documentation and returns them as a slice of RegistryContent.
+func (r *FsSourceRegistry) GetAllContents(docs domain.RemoteDocs) ([]RegistryContent, error) {
+	registryDir, err := config.DocsRegistryDir()
+	if err != nil {
+		return nil, err
+	}
+
+	docsDir := path.Join(registryDir, "remote", docs.Author, docs.Repository, config.PrimaryDocsDirName)
+
+	matches, err := r.GetAllPaths(docs)
+	if err != nil {
+		return nil, err
 	}
 
 	var wg sync.WaitGroup
@@ -108,37 +131,37 @@ func (r *FsSourceRegistry) GetAllContents(docs domain.RemoteDocs) ([]RegistryCon
 
 	contents := make([]RegistryContent, 0, len(matches))
 	for _, docPath := range matches {
-		go func(p string) {
+		go func(docPath string) {
 			defer wg.Done()
 
 			file, err := os.Open(docPath)
 			if err != nil {
-				slog.Error("unable to open doc file", "path", p)
+				slog.Error("unable to open doc file", "path", docPath)
 				return
 			}
 			defer file.Close()
 
 			fileInfo, err := file.Stat()
 			if err != nil {
-				slog.Error("unable to get doc file info", "path", p)
+				slog.Error("unable to get doc file info", "path", docPath)
 				return
 			}
 
 			if fileInfo.Size() >= MAX_FILE_SIZE {
-				slog.Error("doc file is too large", "path", p)
+				slog.Error("doc file is too large", "path", docPath)
 				return
 			}
 
 			reader := bufio.NewReader(file)
 			content, err := io.ReadAll(reader)
 			if err != nil {
-				slog.Error("unable to read doc file", "path", p)
+				slog.Error("unable to read doc file", "path", docPath)
 				return
 			}
 
 			relPath, err := filepath.Rel(docsDir, docPath)
 			if err != nil {
-				slog.Error("unable to get doc file relative path", "path", p)
+				slog.Error("unable to get doc file relative path", "path", docPath)
 				return
 			}
 

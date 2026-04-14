@@ -42,13 +42,20 @@ type DocsPage struct {
 	Vector         *map[int]float32
 }
 
+// SetTitle attempts to infer the title of the documentation page from its content.
+// It looks for the first Markdown header (lines starting with "# ") within the first few lines of the content.
+// If no header is found, it falls back to using the file name (without extension) from the relative path as the title.
+// If both methods fail, it returns an error.
 func (p *DocsPage) SetTitle() error {
 	if p.Content == "" {
 		return fmt.Errorf("unable to infer title with no content")
 	}
 
 	lines := strings.Split(p.Content, "\n")
-	for _, line := range lines {
+	for index, line := range lines {
+		if index > 2 {
+			break
+		}
 		content, found := strings.CutPrefix(line, "# ")
 		if found {
 			p.Title = content
