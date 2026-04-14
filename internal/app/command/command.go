@@ -35,10 +35,10 @@ func (c *Command) parseAuthorAndRepo(arg string) (author string, repo string, er
 	if separatorCount > 1 || resourcePattern.MatchString(arg) {
 		return "", "", fmt.Errorf("Invalid argument. Must be 'org/repo' or 'author/repo'")
 	}
-	
+
 	authorWithRepo := strings.Split(arg, "/")
 	author, repo = authorWithRepo[0], authorWithRepo[1]
 	err = nil
-	
+
 	return
 }
