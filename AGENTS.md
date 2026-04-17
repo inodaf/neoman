@@ -12,18 +12,16 @@ The project is organized with clear separation of concerns using clean architect
 
 **Current Architecture**:
 - `/internal/daemon/` - Backend service implementing clean architecture (domain, usecase, controller, repo, worker)
-- `/internal/app/` - Frontend/TUI (planned)
+- `/internal/app/` - CLI client (command layer)
 - `/internal/{management,models,operations}/` - Legacy packages (being gradually migrated)
 - `/cmd/{daemon,nman}/` - CLI entry points
 - `/pkg/` - Public/reusable packages (config, browser, git)
 - `/docs/` - Documentation
 
 **For detailed information, see**:
-- [docs/Internals/Architecture.md](docs/Internals/Architecture.md) - System architecture and layer design
-- [docs/Internals/Daemon.md](docs/Internals/Daemon.md) - Daemon layer documentation
-- [docs/Internals/App.md](docs/Internals/App.md) - Frontend/TUI documentation (planned)
+- [docs/Internals/Architecture.md](docs/Internals/Architecture.md) - System overview and layer design
+- [docs/Internals/CodingConventions/](docs/Internals/CodingConventions/) - Implementation patterns
 - [docs/Internals/Legacy.md](docs/Internals/Legacy.md) - Legacy package information
-- [docs/Internals/CodingConventions.md](docs/Internals/CodingConventions.md) - Architecture-specific patterns
 
 ## Build
 
