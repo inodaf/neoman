@@ -1,148 +1,164 @@
 # Architecture
 
-Neoman follows a **clean architecture** pattern to separate concerns and maintain flexibility across the codebase. The project is structured into two main components: the **daemon** (backend) and the **app** (frontend/TUI).
+Neoman is a modern documentation reader inspired by Unix `man` pages. It consists of two main components that communicate over a Unix socket.
 
-## High-Level Overview
+## System Components
 
-```mermaid
-graph LR
-    App["App/TUI<br/>(External Client)"]
+```
+┌─────────────────┐          Unix Socket          ┌─────────────────┐
+│                 │      (/tmp/nman.sock)         │                 │
+│   CLI (nman)    │ ◄──────────────────────────►  │  Daemon (nmand) │
+│                 │         HTTP API              │                 │
+│ /internal/app/  │                               │ /internal/daemon│
+└─────────────────┘                               └─────────────────┘
+         │                                                 │
+         │                                                 ▼
+         │                                        ┌─────────────────┐
+         │                                        │     SQLite      │
+         │                                        │    Database     │
+         ▼                                        └─────────────────┘
+   Terminal Output
+```
+
+### Daemon (`nmand`)
+
+The backend service that manages documentation. Located in `/internal/daemon/`.
+
+**Responsibilities**:
+- Store and index documentation from remote sources
+- Serve documentation content via HTTP API
+- Handle background tasks (indexing, syncing)
+
+### CLI (`nman`)
+
+The command-line client for users. Located in `/internal/app/`.
+
+**Responsibilities**:
+- Parse user commands
+- Communicate with daemon via Unix socket
+- Display results in the terminal
+
+## Communication Flow
+
+```mermaid 
+sequenceDiagram
+    participant CLI
+    participant UnixSocket
+    participant Daemon
+    participant Database
     
-
-    subgraph Daemon["Internal Daemon<br/>Clean Architecture"]
-        Controller["Controller Layer<br/>(HTTP handlers)"]
-        UseCase["UseCase Layer<br/>(Business logic)"]
-        Domain["Domain Layer<br/>(Business rules)"]
-        Repository["Repository Layer<br/>(Ports/Interfaces)"]
-        Worker["Worker Layer<br/>(Async operations)"]
-        
-        Controller -->|calls| UseCase
-        UseCase -->|uses| Domain
-        UseCase -->|calls| Repository
-        Worker -->|calls| Repository
-    end
+    Daemon-->>UnixSocket: Listen for requests
     
-    App -->|HTTP/Unix Socket| Controller
-    Daemon -->|provides API| App
+    CLI->>UnixSocket: HTTP Request
+    UnixSocket->>Daemon: Forward
+    Daemon->>Database: Query/Update
+    Database-->>Daemon: Result
+    Daemon-->>UnixSocket: HTTP Response
+    UnixSocket-->>CLI: Response
+    CLI-->>CLI: Display output
 ```
 
-**Note on pkg/ Utilities**: The `/pkg/` shared utilities are accessible to the UseCase layer, Controller layer, and interface implementations (such as repository implementations and workers). However, domain models must remain independent and should not depend on `pkg/` utilities.
+## Daemon Layers
 
-## Layers Explained
-
-### Controller Layer (`controller/`)
-Entry point for external requests. Handles:
-- HTTP endpoint routing and request parsing
-- Request validation and error responses
-- Orchestration of usecase calls
-- Background worker triggering
-
-**Responsibility**: Translate HTTP requests to business operations and return appropriate responses.
-
-### UseCase Layer (`usecase/`)
-Business logic orchestration. Implements:
-- Core operations (AddRemoteDocs, etc.)
-- Input validation and error handling
-- Coordination between domain models and repositories
-- Error constants for common failures
-
-**Responsibility**: Implement business rules and workflows without HTTP or database specifics.
-
-### Domain Layer (`domain/`)
-Core business entities and rules. Contains:
-- Domain models (RemoteDocs, DocsPage, RemoteSource)
-- Model constructors with validation
-- Business logic that belongs to entities
-- Domain-specific errors
-
-**Responsibility**: Represent pure business concepts; models are self-validating.
-
-### Repository Layer (`repo/`)
-Abstraction for data access and external services. Defines:
-- **Ports/Interfaces**: DocsRepository, DocsPageRepository, SourceRegistry
-- **Contracts**: What data operations are available
-- **No Implementation Details**: Implementations live outside this package
-
-**Responsibility**: Define contracts for data persistence and external service calls.
-
-### Worker Layer (`worker/`)
-Background operations and async tasks. Handles:
-- Index page processing
-- Cron jobs
-- Long-running operations
-
-**Responsibility**: Execute time-consuming tasks without blocking HTTP handlers.
-
-## Data Flow Example: Adding Remote Documentation
+The daemon follows clean architecture with five layers:
 
 ```
-HTTP Request (POST /add/author/repo)
-    ↓
-Controller.AddDocs()
-    ├─ Parse path parameters
-    └─ Call UseCase.AddRemoteDocs()
-        ↓
-    UseCase.AddRemoteDocs()
-        ├─ Validate input
-        ├─ Check if docs already exist (via Repository)
-        ├─ Verify docs/ directory exists (via GitRemote)
-        ├─ Create Domain Model (RemoteDocs)
-        ├─ Download source (via SourceRegistry)
-        ├─ Save to persistence (via Repository)
-        └─ Return success/error
-    ↓
-Controller processes response
-    ├─ Handle any errors
-    └─ Trigger Worker for async indexing
-        ↓
-        Worker.IndexPages()
-        └─ Parse documentation files → create DocsPage models → save via Repository
+┌─────────────────────────────────────────────────────────┐
+│                      Controller                          │
+│              (HTTP endpoints, request handling)          │
+├─────────────────────────────────────────────────────────┤
+│                       UseCase                            │
+│              (Business logic orchestration)              │
+├─────────────────────────────────────────────────────────┤
+│                       Domain                             │
+│              (Business entities and rules)               │
+├─────────────────────────────────────────────────────────┤
+│                      Repository                          │
+│              (Data access interfaces/ports)              │
+├─────────────────────────────────────────────────────────┤
+│                       Worker                             │
+│              (Background/async operations)               │
+└─────────────────────────────────────────────────────────┘
 ```
 
-## Dependency Flow
+| Layer | Location | Purpose |
+|-------|----------|---------|
+| Controller | `/internal/daemon/controller/` | HTTP handlers, route registration |
+| UseCase | `/internal/daemon/usecase/` | Business logic, input/output contracts |
+| Domain | `/internal/daemon/domain/` | Business entities, validation rules |
+| Repository | `/internal/daemon/repo/` | Data access interfaces (ports) |
+| Worker | `/internal/daemon/worker/` | Background tasks, async processing |
 
-Dependencies flow **inward** toward domain:
-- Controller → UseCase → Domain
-- UseCase → Repository (interfaces only, not implementations)
-- Worker → Repository (interfaces only, not implementations)
-- Domain has no external dependencies
+**Dependency Flow**: Dependencies flow inward toward domain. Controller depends on UseCase, UseCase depends on Domain and Repository interfaces.
 
-This ensures domain logic is testable and independent of infrastructure.
+## App/Command Layer
 
-## Adding New Features
+The CLI uses a command pattern for user interactions:
 
-### To add a new operation:
+| Component | Location | Purpose |
+|-----------|----------|---------|
+| Command | `/internal/app/command/` | CLI command implementations |
+| Main | `/cmd/nman/main.go` | Command routing and entry point |
 
-1. **Define Domain Model** (`domain/`): Create any new models needed
-2. **Define Repository Interfaces** (`repo/`): If new data access needed, extend ports
-3. **Implement UseCase** (`usecase/`): Add operation method with input structure and errors
-4. **Add Controller Endpoint** (`controller/`): HTTP handler that calls the usecase
-5. **Add Worker Task** (`worker/`, optional): If async processing needed
+Each command:
+1. Parses user input
+2. Makes HTTP request to daemon
+3. Handles response/errors
+4. Outputs to terminal with appropriate exit code
 
-### To extend existing operations:
+## Database
 
-- Modify UseCase methods to add new logic
-- Add new error constants for new failure modes
-- Update Controller to handle new error types
-- Extend Worker if new background processing needed
+Neoman uses SQLite for local storage with Goose for migrations.
 
-## App Layer (Planned)
+**Location**: `~/.local/share/neoman/neoman.db` (configurable)
 
-The `/internal/app/` package will implement the frontend/TUI. It will:
-- Communicate with daemon via HTTP API
-- Render terminal UI based on daemon responses
-- Maintain session state
-- Handle user input and interactions
+**Migrations**: `/cmd/daemon/db/migrations/`
 
-See [App.md](./App.md) for details.
+### Creating Migrations
 
-## Legacy Packages
+Use the make task to create new migrations:
 
-The `management/`, `models/`, and `operations/` packages under `/internal/` are legacy and gradually being migrated into the clean architecture. See [Legacy.md](./Legacy.md) for details.
+```bash
+make migration NAME=<description>
+```
+
+This generates a timestamped SQL file. Edit it to add:
+- `-- +goose Up` section with schema changes
+- `-- +goose Down` section with rollback logic
+
+Migrations are embedded in the binary at compile time and run automatically on daemon startup.
+
+## Project Structure
+
+```
+/
+├── cmd/
+│   ├── daemon/          # Daemon entry point and database setup
+│   └── nman/            # CLI entry point
+├── internal/
+│   ├── daemon/          # Backend (clean architecture)
+│   │   ├── domain/      # Business entities
+│   │   ├── usecase/     # Business logic
+│   │   ├── controller/  # HTTP endpoints
+│   │   ├── repo/        # Data access interfaces
+│   │   └── worker/      # Background tasks
+│   ├── app/             # Frontend/CLI
+│   │   └── command/     # CLI commands
+│   ├── management/      # Legacy (being migrated)
+│   ├── models/          # Legacy (being migrated)
+│   └── operations/      # Legacy (being migrated)
+├── pkg/                 # Shared utilities
+│   ├── config/          # Configuration
+│   ├── browser/         # Browser utilities
+│   └── git/             # Git operations
+└── docs/                # Documentation
+```
 
 ## See Also
 
-- [Daemon.md](./Daemon.md) - Detailed layer documentation
-- [CodingConventions.md](./CodingConventions.md) - Patterns and standards
-- [App.md](./App.md) - Frontend/TUI documentation
-- [Legacy.md](./Legacy.md) - Legacy packages
+- [CodingConventions/](./CodingConventions/) - Implementation patterns and standards
+  - [Overview.md](./CodingConventions/Overview.md) - General principles
+  - [Daemon.md](./CodingConventions/Daemon.md) - Daemon layer patterns
+  - [App.md](./CodingConventions/App.md) - CLI/Command patterns
+  - [FeatureChecklist.md](./CodingConventions/FeatureChecklist.md) - End-to-end implementation guide
+- [Legacy.md](./Legacy.md) - Legacy package information
