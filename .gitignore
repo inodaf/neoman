@@ -3,3 +3,4 @@ bin/
 .fleet/
 .zed/
 .dev.md
+.DS_Store
