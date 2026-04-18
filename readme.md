@@ -31,12 +31,7 @@
 
 ## Overview
 
-Neoman brings the simplicity of Unix `man` pages to modern software documentation. It consists of two components:
-
-- **nman** — CLI client for reading documentation
-- **nmand** — Local daemon for serving and indexing documentation
-
-Documentation stays in your Git repositories. Neoman fetches, indexes, and serves it locally. No external servers, no hosting costs, no data leaving your machine.
+Neoman brings the simplicity of Unix `man` pages to modern software documentation. Docs stays in your Git repositories. Neoman fetches, indexes, and serves it locally. No external servers, no hosting costs, no data leaving your machine.
 
 ## Features
 
@@ -54,9 +49,9 @@ Documentation stays in your Git repositories. Neoman fetches, indexes, and serve
 
 ### Coming Soon
 
-- **Semantic Search** — AI Agents query up-to-date docs using natural language. Get relevance-ranked results with preview snippets.
+- **Semantic Search** — Query using natural language. Get relevance-ranked results with preview snippets.
 
-- **Agentic Context Retrieval** — Retrieve relevant documentation context for coding agents and AI assistants.
+- **Agentic Context Retrieval** — Retrieve relevant up-to-date documentation context for coding agents and AI assistants.
 
 
 ## Installation
