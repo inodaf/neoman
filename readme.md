@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  A modern documentation reader inspired by Unix <code>man</code> pages.<br/>
+  A modern documentation retriever and reader inspired by Unix <code>man</code> pages.<br/>
   Read, search, and serve documentation locally — built for AI-assisted development workflows.
 </p>
 
