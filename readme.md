@@ -1,34 +1,72 @@
-# Neoman
+<p align="center">
+  <strong>Neoman</strong><br/>
+  <em>Equip your AI Agents with Internal/Enterprise Docs</em>
+</p>
 
-[![Static Badge](https://img.shields.io/badge/Docs-%24_nman_inodaf%2Fneoman-black)](https://github.com/inodaf/neoman)
+<p align="center">
+  <a href="https://github.com/inodaf/neoman"><img alt="Go Version" src="https://img.shields.io/badge/Go-1.22+-00ADD8?logo=go&logoColor=white"></a>
+  <a href="https://github.com/inodaf/neoman/blob/main/LICENSE"><img alt="License: MIT" src="https://img.shields.io/badge/License-MIT-yellow.svg"></a>
+  <a href="https://github.com/inodaf/neoman"><img alt="Docs" src="https://img.shields.io/badge/Docs-%24_nman_inodaf%2Fneoman-black"></a>
+</p>
 
-A modern documentation reader inspired by Unix `man` pages, designed to make software documentation accessible, searchable, and maintainable.
+<p align="center">
+  A modern documentation reader inspired by Unix <code>man</code> pages.<br/>
+  Read, search, and serve documentation locally — built for AI-assisted development workflows.
+</p>
+
+<p align="center">
+  <a href="#overview">Overview</a> •
+  <a href="#features">Features</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#quickstart">Quickstart</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#adopting-neoman">Adopting Neoman</a> •
+  <a href="#contributing">Contributing</a>
+</p>
+
+---
 
 > [!NOTE]
 > Neoman is currently in early development. Expect frequent updates and changes as we refine the experience.
 
+## Overview
+
+Neoman brings the simplicity of Unix `man` pages to modern software documentation. It consists of two components:
+
+- **nman** — CLI client for reading documentation
+- **nmand** — Local daemon for serving and indexing documentation
+
+Documentation stays in your Git repositories. Neoman fetches, indexes, and serves it locally. No external servers, no hosting costs, no data leaving your machine.
+
 ## Features
 
-**Agentic Engineering** - Query documentation semantically, retrieve context for coding agents, and track token usage across your docs. Built for AI-assisted development workflows.
+### Available Now
 
-**Local & Secure** - Everything runs locally on your machine. No data leaves your device, perfect for private organizational documentation.
+- **Local & Safe** — Runs and stays on your device. Perfect for private org documentations.
 
-**Zero-Deployment Documentation** - Focus on writing great docs, not managing infrastructure. No servers to maintain, no hosting costs. Just write Markdown and push to Git.
+- **Documentation Hub** — All your org's internal documentations in one local searchable place.
 
-**Git-Native Workflow** - Documentation stays in sync with your code automatically. Push to any Git provider (GitHub, GitLab, etc.) and readers get updates instantly.
+- **Git-Native Workflow** — Documentation syncs with your code. Push to any Git provider (GitHub, GitLab, etc.).
 
-**Convention Over Configuration** - Create a `/docs` directory with an `index.md` file and you're ready. No complex setup required.
+- **Practical Convention** — A `/docs` directory with `.md` files is all you need.
 
-**Unified Documentation Hub** - All your organization's documentation in one searchable place. Search across all docs or filter by specific projects.
+- **Zero-Deployment** — No servers to maintain. Write Markdown, push to a Git provider, done.
 
-## Requirements
+### Coming Soon
+
+- **Semantic Search** — AI Agents query up-to-date docs using natural language. Get relevance-ranked results with preview snippets.
+
+- **Agentic Context Retrieval** — Retrieve relevant documentation context for coding agents and AI assistants.
+
+
+## Installation
+
+### Requirements
 
 - Go 1.22 or later
 - macOS or Linux
 
-## Installation
-
-Build from source:
+### Build from Source
 
 ```sh
 git clone https://github.com/inodaf/neoman.git
@@ -37,8 +75,8 @@ make all
 ```
 
 The binaries will be created in `./bin/`:
-- `./bin/nman` - CLI client for reading documentation
-- `./bin/nmand` - Daemon server for serving documentation
+- `./bin/nman` — CLI client
+- `./bin/nmand` — Daemon server
 
 Add to your PATH:
 
@@ -46,7 +84,7 @@ Add to your PATH:
 export PATH="$PATH:$(pwd)/bin"
 ```
 
-## Quick Start
+## Quickstart
 
 Start using Neoman immediately:
 
@@ -54,56 +92,49 @@ Start using Neoman immediately:
 nman inodaf/neoman
 ```
 
-This opens the Neoman documentation using Neoman itself.
+This launches a terminal interface for browsing the Neoman documentation — using Neoman itself.
 
 ## Usage
 
-### Open Documentation by Project
+### Open Documentation
 
 ```sh
-nman author/project
+nman a-github-user/repo-name # E.g. nman vercel/next.js
 ```
 
-Opens the documentation for the specified project (e.g., `nman inodaf/neoman`).
+Opens an interactive terminal interface for navigating through the documentation.
 
-### Open Documentation from Current Directory
-
-```sh
-nman .
-# or just
-nman
-```
-
-Looks for a `docs` directory in the current Git repository and opens it.
-
-### List Available Documentation
+### List Documentation
 
 ```sh
-# List all available projects
+# All available projects
 nman list
 
-# List all projects in an organization
-nman list author
+# Projects in an organization
+nman list <author>
 
-# List all documents in a specific project
-nman list author/project
+# Documents in a project
+nman list <author>/<project>
 ```
 
-### View Specific Document
+### View a Specific Document
 
 ```sh
 nman view author/project "path/to/document.md"
 ```
 
+For detailed usage, run `nman inodaf/neoman` or visit the [documentation](docs/).
+
 ## Adopting Neoman
 
-To make your project's documentation available through Neoman:
+Make your project's documentation available through Neoman in few steps:
 
 1. Create a `/docs` directory in your repository root
-2. Add an `index.md` file with your documentation index
 3. Add additional `.md` files for your documentation pages
+2. Add an `index.md` file as your documentation front-page (optional)
+4. Push to your Git provider (GitHub, GitLab, etc.)
 
-Example structure:
+**Example structure:**
 
 ```
 your-repo/
@@ -118,24 +149,28 @@ your-repo/
 └── README.md
 ```
 
-That's it! Your documentation will be accessible via:
+Your documentation is now accessible via:
 
 ```sh
 nman your-username/your-repo
 ```
 
-For detailed authoring guidelines, see [docs/Authoring Docs/](docs/Authoring%20Docs/).
+For authoring guidelines, see [docs/Authoring Docs/](docs/Authoring%20Docs/).
 
 ## Contributing
 
 We welcome contributions! Here's how to get started:
 
-1. Review the [Architecture documentation](docs/Internals/Architecture.md) to understand the codebase
-2. Check out [Coding Conventions](docs/Internals/CodingConventions.md) for style guidelines
-3. Submit pull requests with meaningful commit messages
+1. Review the [Architecture documentation](docs/Internals/Architecture.md)
+2. Check out [Coding Conventions](docs/Internals/CodingConventions.md)
 
-For more details, see the [docs/Internals/](docs/Internals/) directory.
+See [docs/Internals/](docs/Internals/) for more details.
+
+## Get in Touch
+
+- [GitHub Issues](https://github.com/inodaf/neoman/issues) — Report bugs or request features
+- [GitHub Discussions](https://github.com/inodaf/neoman/discussions) — Ask questions and share ideas
 
 ## License
 
-MIT License - see LICENSE file for details
+MIT License — see [LICENSE](LICENSE) for details.
