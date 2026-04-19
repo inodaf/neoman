@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"sync"
+
+	"github.com/inodaf/neoman/internal/app/ui/views"
 )
 
 func (c *Command) AddOrOpen(ctx context.Context, arg string) {
@@ -16,16 +19,48 @@ func (c *Command) AddOrOpen(ctx context.Context, arg string) {
 		return
 	}
 
+	model := views.AddOrOpenViewModel{
+		Provider: "GitHub",
+		Author:   author,
+		Repo:     repo,
+		Step:     "Retrieving documentation...",
+		Done:     false,
+	}
+	viewModel := make(chan views.AddOrOpenViewModel)
+
+	var wg sync.WaitGroup
+	wg.Go(func() { views.AddOrOpenView(viewModel) })
+
+	viewModel <- model
 	err = c.addDocs(ctx, author, repo)
+
 	if err != nil && errors.Is(err, ErrConflict) {
-		fmt.Printf("neoman: %s.\n", err.Error())
+		model.Done = true
+		model.Step = "Docs were already retrieved"
+		viewModel <- model
+
+		close(viewModel)
+		wg.Wait()
 		os.Exit(1)
+
 		return
 	} else if err != nil {
-		fmt.Printf("neoman: %s.\n", err.Error())
+		model.Error = err
+		viewModel <- model
+
+		close(viewModel)
+		wg.Wait()
 		os.Exit(1)
+
 		return
 	}
+
+	model.Step = "Documentation added"
+	model.Done = true
+	viewModel <- model
+
+	close(viewModel)
+	wg.Wait()
 
 	os.Exit(0)
 }
