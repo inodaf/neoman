@@ -52,7 +52,7 @@ func (r *docsPageRepository) SaveMany(pages []domain.DocsPage) error {
 	return nil
 }
 
-func (r *docsPageRepository) FindAll(author, repository string) ([]domain.DocsPage, error) {
+func (r *docsPageRepository) GetAll(author, repository string) ([]domain.DocsPage, error) {
 	query := `
 		SELECT author, repository, relative_path, title, last_modified_at
 		FROM docpages

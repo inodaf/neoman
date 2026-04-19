@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
-	"strings"
 )
 
 func NewGitHubClient() *GitHubClient {
@@ -26,18 +25,16 @@ type GitHubClient struct {
 	http.Request
 }
 
-func (c *GitHubClient) ProviderName() string {
+func (c *GitHubClient) Name() string {
 	return "github"
 }
 
-func (c *GitHubClient) CloneURL(author, repo string) string {
-	var sshURL = url.URL{
-		User: url.User("git"),
-		Path: fmt.Sprintf("%s.git", repo),
-		Host: fmt.Sprintf("%s:%s", "github.com", author),
-	}
+func (c *GitHubClient) WebPageURL(author, repo string) string {
+	return fmt.Sprintf("https://github.com/%s/%s", author, repo)
+}
 
-	return strings.Replace(sshURL.String(), "//", "", 1)
+func (c *GitHubClient) CloneURL(author, repo string) string {
+	return fmt.Sprintf("git@github.com:%s/%s.git", author, repo)
 }
 
 func (c *GitHubClient) IsDocsDirPresent(author, repo string) error {

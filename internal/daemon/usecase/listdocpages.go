@@ -15,30 +15,30 @@ type ListDocPagesOutput struct {
 	Pages []domain.DocsPage
 }
 
-func (u *UseCase) ListDocPages(input ListDocPagesInput) (ListDocPagesOutput, error) {
+func (u *UseCase) ListDocPages(input ListDocPagesInput) (*ListDocPagesOutput, error) {
 	if input.Author == "" {
-		return ListDocPagesOutput{}, ErrListDocPagesAuthorRequired
+		return nil, ErrListDocPagesAuthorRequired
 	}
 
 	if input.Repository == "" {
-		return ListDocPagesOutput{}, ErrListDocPagesRepositoryRequired
+		return nil, ErrListDocPagesRepositoryRequired
 	}
 
 	exists, err := u.docsRepository.Exists(input.Author, input.Repository)
 	if err != nil {
-		return ListDocPagesOutput{}, err
+		return nil, err
 	}
 
 	if !exists {
-		return ListDocPagesOutput{}, ErrListDocPagesDocsNotFound
+		return nil, ErrListDocPagesDocsNotFound
 	}
 
-	pages, err := u.docsPageRepository.FindAll(input.Author, input.Repository)
+	pages, err := u.docsPageRepository.GetAll(input.Author, input.Repository)
 	if err != nil {
-		return ListDocPagesOutput{}, err
+		return nil, err
 	}
 
-	return ListDocPagesOutput{Pages: pages}, nil
+	return &ListDocPagesOutput{Pages: pages}, nil
 }
 
 var (

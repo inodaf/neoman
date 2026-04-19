@@ -18,7 +18,7 @@ func (w *Worker) IndexPages(input IndexPagesInput) error {
 		return err
 	}
 
-	files, err := w.sourceRegistry.GetAllContents(docs)
+	files, err := w.sourceRegistry.GetAll(docs)
 	if err != nil {
 		return err
 	}

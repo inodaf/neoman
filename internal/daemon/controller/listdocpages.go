@@ -49,14 +49,14 @@ func (c *controller) ListDocPages(w http.ResponseWriter, r *http.Request) {
 }
 
 func formatPagesAsYAML(author, repo string, pages []domain.DocsPage) string {
-	var sb strings.Builder
+	var yaml strings.Builder
 
-	sb.WriteString(fmt.Sprintf("project: %s/%s\n", author, repo))
-	sb.WriteString("docs:\n")
+	fmt.Fprintf(&yaml, "project: %s/%s\n", author, repo)
+	yaml.WriteString("docs:\n")
 
 	for _, page := range pages {
-		sb.WriteString(fmt.Sprintf("  - %s: '%s'\n", page.Title, page.RelativePath))
+		fmt.Fprintf(&yaml, "  - %s: '%s'\n", page.Title, page.RelativePath)
 	}
 
-	return sb.String()
+	return yaml.String()
 }

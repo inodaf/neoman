@@ -15,12 +15,12 @@ type DocsRepository interface {
 type DocsPageRepository interface {
 	Save(page domain.DocsPage) error
 	SaveMany(pages []domain.DocsPage) error
-	FindAll(author, repository string) ([]domain.DocsPage, error)
+	GetAll(author, repository string) ([]domain.DocsPage, error)
 }
 
-type SourceRegistry interface {
+type ContentSource interface {
 	Download(entry domain.RemoteDocs) error
-	GetAllContents(entry domain.RemoteDocs) ([]RegistryContent, error)
+	GetAll(entry domain.RemoteDocs) ([]RegistryContent, error)
 }
 
 type RegistryContent struct {

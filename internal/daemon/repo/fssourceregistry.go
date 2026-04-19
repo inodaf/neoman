@@ -32,7 +32,7 @@ func isHiddenFile(filename string) bool {
 	return strings.HasPrefix(filename, ".")
 }
 
-func NewFsSourceRegistry(remote git.GitRemote) SourceRegistry {
+func NewFsSourceRegistry(remote git.GitRemote) ContentSource {
 	return &FsSourceRegistry{GitRemoteProvider: remote}
 }
 
@@ -111,9 +111,9 @@ func (r *FsSourceRegistry) GetAllPaths(docs domain.RemoteDocs) ([]string, error)
 	return matches, nil
 }
 
-// GetAllContents reads the content of all Markdown (.md, .mdx) files in the remote
+// GetAll reads the content of all Markdown (.md, .mdx) files in the remote
 // documentation and returns them as a slice of RegistryContent.
-func (r *FsSourceRegistry) GetAllContents(docs domain.RemoteDocs) ([]RegistryContent, error) {
+func (r *FsSourceRegistry) GetAll(docs domain.RemoteDocs) ([]RegistryContent, error) {
 	registryDir, err := config.DocsRegistryDir()
 	if err != nil {
 		return nil, err

@@ -38,7 +38,7 @@ func (u *UseCase) AddRemoteDocs(input AddDocsInput) error {
 	docs := domain.NewRemoteDocs(
 		input.Author,
 		input.Repository,
-		domain.RemoteSource(u.gitRemoteClient.ProviderName()),
+		domain.RemoteSource(u.gitRemoteClient.Name()),
 	)
 
 	err = u.sourceRegistry.Download(*docs)

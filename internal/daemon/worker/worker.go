@@ -6,7 +6,7 @@ import (
 
 func NewWorker(
 	docsPageRepository repo.DocsPageRepository,
-	sourceRegistry repo.SourceRegistry,
+	sourceRegistry repo.ContentSource,
 	docsRepository repo.DocsRepository,
 	jobRepository repo.JobRepository,
 ) *Worker {
@@ -19,7 +19,7 @@ func NewWorker(
 }
 
 type Worker struct {
-	sourceRegistry     repo.SourceRegistry
+	sourceRegistry     repo.ContentSource
 	docsPageRepository repo.DocsPageRepository
 	docsRepository     repo.DocsRepository
 	jobRepository      repo.JobRepository
