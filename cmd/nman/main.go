@@ -25,6 +25,12 @@ func main() {
 		return
 	}
 
+	// Handle: nman <author/repo> --add-only
+	if len(os.Args) == 3 && strings.Count(os.Args[1], "/") == 1 && os.Args[2] == "--add-only" {
+		cmd.AddOnly(context.TODO(), os.Args[1])
+		return
+	}
+
 	if len(os.Args) == 2 && strings.Count(os.Args[1], "/") == 1 {
 		cmd.AddOrOpen(context.TODO(), os.Args[1])
 		return
@@ -52,6 +58,9 @@ func main() {
 		return
 	case "view":
 		handleViewCommand()
+		return
+	case "skills":
+		cmd.Skills()
 		return
 	default:
 		fmt.Printf("neoman: '%s' is not a valid command. See 'nman --help'.\n", os.Args[1])

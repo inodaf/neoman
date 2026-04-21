@@ -65,6 +65,30 @@ func (c *Command) AddOrOpen(ctx context.Context, arg string) {
 	os.Exit(0)
 }
 
+func (c *Command) AddOnly(ctx context.Context, arg string) {
+	author, repo, err := c.parseAuthorAndRepo(arg)
+	if err != nil {
+		fmt.Printf("neoman: %s.\n", err.Error())
+		os.Exit(1)
+		return
+	}
+
+	err = c.addDocs(ctx, author, repo)
+
+	if err != nil && errors.Is(err, ErrConflict) {
+		fmt.Println("Documentation already installed")
+		os.Exit(0)
+		return
+	} else if err != nil {
+		fmt.Printf("neoman: %s.\n", err.Error())
+		os.Exit(1)
+		return
+	}
+
+	fmt.Println("Documentation added successfully")
+	os.Exit(0)
+}
+
 func (c *Command) addDocs(ctx context.Context, author, repo string) error {
 	resource := url.URL{Host: "unix", Scheme: "http", Path: fmt.Sprintf("/add/%s/%s", author, repo)}
 
