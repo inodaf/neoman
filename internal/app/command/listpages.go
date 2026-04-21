@@ -63,7 +63,7 @@ func (c *Command) listDocPages(ctx context.Context, author, repo string) (string
 }
 
 var (
-	ErrListDocsNotFound = fmt.Errorf("Docs not found for this project")
-	ErrListNoPagesFound = fmt.Errorf("No pages found for this project")
-	ErrListUnexpected   = fmt.Errorf("Unable to list doc pages")
+	ErrListDocsNotFound = fmt.Errorf("Documentation not found. Add by running 'neoman author/repo'")
+	ErrListNoPagesFound = fmt.Errorf("Documentation is empty")
+	ErrListUnexpected   = fmt.Errorf("Unable to show documentation pages")
 )
