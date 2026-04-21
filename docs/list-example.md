@@ -42,7 +42,7 @@ This is a list of all documentation installed. Use this list to discover project
 
 ---
 docs:
-  - n26/repo
+  - inodaf/repo
   - another-org/some-project
 ---
 
