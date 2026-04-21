@@ -80,3 +80,41 @@ func (r *docsRepository) GetOne(author, repository string, source domain.RemoteS
 
 	return docs, nil
 }
+
+func (r *docsRepository) GetByAuthor(author string) ([]domain.RemoteDocs, error) {
+	query := `
+		SELECT author, repository, source, indexing, last_sync_at, created_at, updated_at
+		FROM remote_docs
+		WHERE author = ?
+	`
+
+	rows, err := r.db.Query(query, author)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query remote docs by author: %w", err)
+	}
+	defer rows.Close()
+
+	var docsList []domain.RemoteDocs
+	for rows.Next() {
+		var docs domain.RemoteDocs
+		err := rows.Scan(
+			&docs.Author,
+			&docs.Repository,
+			&docs.Source,
+			&docs.Indexing,
+			&docs.LastSyncAt,
+			&docs.CreatedAt,
+			&docs.UpdatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan remote docs: %w", err)
+		}
+		docsList = append(docsList, docs)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating remote docs rows: %w", err)
+	}
+
+	return docsList, nil
+}
