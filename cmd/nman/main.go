@@ -32,11 +32,23 @@ func main() {
 
 	switch os.Args[1] {
 	case "list":
-		if len(os.Args) != 3 || strings.Count(os.Args[2], "/") != 1 {
-			fmt.Println("neoman: Usage: nman list <author/repo>")
+		if len(os.Args) == 2 {
+			// nman list → future: list all docs
+			fmt.Println("neoman: Usage: nman list <author> or nman list <author/repo>")
 			return
 		}
-		cmd.ListPages(context.TODO(), os.Args[2])
+		if len(os.Args) != 3 {
+			fmt.Println("neoman: Usage: nman list <author> or nman list <author/repo>")
+			return
+		}
+		arg := os.Args[2]
+		if strings.Count(arg, "/") == 1 {
+			cmd.ListPages(context.TODO(), arg)
+		} else if strings.Count(arg, "/") == 0 {
+			cmd.ListAuthorDocs(context.TODO(), arg)
+		} else {
+			fmt.Println("neoman: Usage: nman list <author> or nman list <author/repo>")
+		}
 		return
 	case "view":
 		handleViewCommand()
