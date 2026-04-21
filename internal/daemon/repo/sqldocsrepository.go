@@ -118,3 +118,41 @@ func (r *docsRepository) GetByAuthor(author string) ([]domain.RemoteDocs, error)
 
 	return docsList, nil
 }
+
+func (r *docsRepository) GetAll() ([]domain.RemoteDocs, error) {
+	query := `
+		SELECT author, repository, source, indexing, last_sync_at, created_at, updated_at
+		FROM remote_docs
+		ORDER BY author, repository
+	`
+
+	rows, err := r.db.Query(query)
+	if err != nil {
+		return nil, fmt.Errorf("failed to query all remote docs: %w", err)
+	}
+	defer rows.Close()
+
+	var docsList []domain.RemoteDocs
+	for rows.Next() {
+		var docs domain.RemoteDocs
+		err := rows.Scan(
+			&docs.Author,
+			&docs.Repository,
+			&docs.Source,
+			&docs.Indexing,
+			&docs.LastSyncAt,
+			&docs.CreatedAt,
+			&docs.UpdatedAt,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan remote docs: %w", err)
+		}
+		docsList = append(docsList, docs)
+	}
+
+	if err = rows.Err(); err != nil {
+		return nil, fmt.Errorf("error iterating remote docs rows: %w", err)
+	}
+
+	return docsList, nil
+}

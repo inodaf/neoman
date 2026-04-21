@@ -11,6 +11,7 @@ type DocsRepository interface {
 	Exists(author, repository string) (bool, error)
 	GetOne(author, repository string, source domain.RemoteSource) (domain.RemoteDocs, error)
 	GetByAuthor(author string) ([]domain.RemoteDocs, error)
+	GetAll() ([]domain.RemoteDocs, error)
 }
 
 type DocsPageRepository interface {
