@@ -88,3 +88,31 @@ func (r *docsPageRepository) GetAll(author, repository string) ([]domain.DocsPag
 
 	return pages, nil
 }
+
+func (r *docsPageRepository) GetOne(author, repository, relativePath string) (*domain.DocsPage, error) {
+	query := `
+		SELECT author, repository, relative_path, title, content, last_modified_at
+		FROM docpages
+		WHERE author = ? AND repository = ? AND relative_path = ?
+	`
+
+	var page domain.DocsPage
+	err := r.db.QueryRow(query, author, repository, relativePath).Scan(
+		&page.Author,
+		&page.Repository,
+		&page.RelativePath,
+		&page.Title,
+		&page.Content,
+		&page.LastModifiedAt,
+	)
+
+	if err == sql.ErrNoRows {
+		return nil, fmt.Errorf("page not found")
+	}
+
+	if err != nil {
+		return nil, fmt.Errorf("failed to query doc page: %w", err)
+	}
+
+	return &page, nil
+}

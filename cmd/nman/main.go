@@ -57,7 +57,12 @@ func main() {
 		}
 		return
 	case "view":
-		handleViewCommand()
+		if len(os.Args) != 4 {
+			fmt.Println("neoman: Usage: nman view <author/repo> <path>")
+			os.Exit(1)
+			return
+		}
+		cmd.ViewPage(context.TODO(), os.Args[2], os.Args[3])
 		return
 	case "skills":
 		cmd.Skills()
@@ -66,25 +71,4 @@ func main() {
 		fmt.Printf("neoman: '%s' is not a valid command. See 'nman --help'.\n", os.Args[1])
 		return
 	}
-}
-
-// handleViewCommand processes the view command
-// Usage: nman view <project> <document-path>
-func handleViewCommand() {
-	if len(os.Args) != 4 {
-		fmt.Println("neoman: Usage: nman view <project> <document-path>")
-		return
-	}
-
-	project := os.Args[2]
-	documentPath := os.Args[3]
-
-	// Call ViewDocument
-	output, err := operations.ViewDocument(project, documentPath)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "neoman: %v\n", err)
-		os.Exit(1)
-	}
-
-	fmt.Print(output)
 }

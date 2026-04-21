@@ -17,6 +17,7 @@ func NewHttpController(useCase *usecase.UseCase, jobRepository repo.JobRepositor
 	mux.HandleFunc("GET /docs", ctrl.ListAllDocs)
 	mux.HandleFunc("GET /docs/{author}", ctrl.ListAuthorDocs)
 	mux.HandleFunc("GET /docs/{author}/{repo}/pages", ctrl.ListDocPages)
+	mux.HandleFunc("GET /docs/{author}/{repo}/pages/{path...}", ctrl.ViewDocPage)
 
 	return mux
 }

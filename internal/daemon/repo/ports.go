@@ -18,6 +18,7 @@ type DocsPageRepository interface {
 	Save(page domain.DocsPage) error
 	SaveMany(pages []domain.DocsPage) error
 	GetAll(author, repository string) ([]domain.DocsPage, error)
+	GetOne(author, repository, relativePath string) (*domain.DocsPage, error)
 }
 
 type ContentSource interface {
