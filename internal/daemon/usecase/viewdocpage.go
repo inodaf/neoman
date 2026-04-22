@@ -3,6 +3,8 @@ package usecase
 import (
 	"fmt"
 	"strings"
+
+	"github.com/inodaf/neoman/internal/daemon/domain"
 )
 
 type ViewDocPageInput struct {
@@ -28,12 +30,7 @@ func (u *UseCase) ViewDocPage(input ViewDocPageInput) (*ViewDocPageOutput, error
 		return nil, ErrViewDocPagePathRequired
 	}
 
-	// Normalize path: auto-append .md if no extension
-	normalizedPath := input.RelativePath
-	if !strings.HasSuffix(normalizedPath, ".md") && !strings.HasSuffix(normalizedPath, ".mdx") {
-		normalizedPath = normalizedPath + ".md"
-	}
-
+	// Check if documentation exists
 	exists, err := u.docsRepository.Exists(input.Author, input.Repository)
 	if err != nil {
 		return nil, err
@@ -43,12 +40,29 @@ func (u *UseCase) ViewDocPage(input ViewDocPageInput) (*ViewDocPageOutput, error
 		return nil, ErrViewDocPageDocsNotFound
 	}
 
-	page, err := u.docsPageRepository.GetOne(input.Author, input.Repository, normalizedPath)
-	if err != nil {
-		if strings.Contains(err.Error(), "not found") {
-			return nil, ErrViewDocPageNotFound
+	// Normalize path: if no extension, try .md first, then .mdx
+	pathsToTry := []string{input.RelativePath}
+	if !strings.HasSuffix(input.RelativePath, ".md") && !strings.HasSuffix(input.RelativePath, ".mdx") {
+		pathsToTry = []string{
+			input.RelativePath + ".md",
+			input.RelativePath + ".mdx",
 		}
-		return nil, err
+	}
+
+	// Try each path until we find the page
+	var page *domain.DocsPage
+	for _, path := range pathsToTry {
+		page, err = u.docsPageRepository.GetOne(input.Author, input.Repository, path)
+		if err == nil {
+			break
+		}
+		if !strings.Contains(err.Error(), "not found") {
+			return nil, err
+		}
+	}
+
+	if page == nil {
+		return nil, ErrViewDocPageNotFound
 	}
 
 	return &ViewDocPageOutput{Content: page.Content}, nil
