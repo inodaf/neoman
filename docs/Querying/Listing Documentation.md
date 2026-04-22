@@ -4,14 +4,13 @@ The `nman list` command helps you discover what documentation is installed on yo
 
 ## Designed for AI Agents
 
-While the list commands can be used naturally by humans, they're **especially valuable for AI coding agents**. The structured YAML output makes it easy for AI assistants to:
+The list command outputs **structured YAML** format, making it ideal for AI coding agents to:
 
-- Quickly discover what documentation is available to consult
+- Discover what documentation is available to consult
 - Understand the scope of installed knowledge bases
 - Programmatically navigate documentation to gain context
-- Build efficient workflows for documentation lookup
 
-If you're an AI agent, use `nman list` as your starting point to understand what documentation resources are available before diving into specific pages with `nman view` or `nman query`.
+Combine with `nman view` to retrieve specific pages, or `nman query` to search within documentation.
 
 ## Usage
 
