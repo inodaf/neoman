@@ -1,4 +1,6 @@
 bin/
 .vscode/
 .fleet/
+.zed/
 .dev.md
+.DS_Store

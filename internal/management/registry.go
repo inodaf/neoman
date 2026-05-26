@@ -48,11 +48,23 @@ func RegistryHasEntry(entry RegistryEntry) bool {
 	return err == nil
 }
 
-func RegistryAddEntry(entry RegistryEntry) error {
-	if RegistryHasEntry(entry) {
-		return errors.New("a project of same name is already registered")
+func RegistryEntryDirPath(entry RegistryEntry) (string, error) {
+	registryDir, err := config.DocsRegistryDir()
+	if err != nil {
+		return "", err
 	}
 
+	switch entry.Scope {
+	case RegistryTypeLocal:
+		return path.Join(registryDir, "local", entry.Project), nil
+	case RegistryTypeRemote:
+		return path.Join(registryDir, "remote", entry.Owner, entry.Project), nil
+	default:
+		return "", errors.New("invalid registry type")
+	}
+}
+
+func RegistryAddEntry(entry RegistryEntry) error {
 	registryDir, err := config.DocsRegistryDir()
 	if err != nil {
 		return err
@@ -99,5 +111,20 @@ func addRemoteEntry(input RegistryEntry, registryDir string) error {
 
 	defer os.Chdir(wd)
 
-	return git.Clone(input.Owner, input.Project, git.GitRemoteProviderGitHub)
+	err = git.Clone(input.Owner, input.Project, git.NewGitHubClient())
+	if err != nil {
+		return errors.New("could not copy documentation from remote")
+	}
+
+	err = os.Chdir(path.Join(ownerDir, input.Project))
+	if err != nil {
+		return errors.New("could not access documentation directory")
+	}
+
+	err = git.SparseCheckout()
+	if err != nil {
+		return errors.New("could not sync documentation from remote")
+	}
+
+	return nil
 }

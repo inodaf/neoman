@@ -68,7 +68,7 @@ func OpenFromName(proj string) {
 	proj = strings.ToLower(strings.TrimSpace(proj))
 	separatorCount := strings.Count(proj, "/")
 
-	if separatorCount > 1 || re.Match([]byte(proj)) {
+	if separatorCount > 1 || re.MatchString(proj) {
 		fmt.Println("neoman: Invalid argument. Must be 'repo' or 'org/repo'")
 		return
 	}
@@ -81,7 +81,9 @@ func OpenFromName(proj string) {
 	if separatorCount == 0 && hasLocalEntry {
 		browser.Open(proj)
 		return
-	} else if separatorCount == 0 && !hasLocalEntry {
+	}
+
+	if separatorCount == 0 && !hasLocalEntry {
 		return
 	}
 
@@ -99,7 +101,7 @@ func OpenFromName(proj string) {
 		return
 	}
 
-	err := FetchDocs(author, repo)
+	err := GetDocs(author, repo)
 	if err != nil {
 		fmt.Print(err)
 		return
