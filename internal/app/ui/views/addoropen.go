@@ -43,7 +43,7 @@ func AddOrOpenView(model chan AddOrOpenViewModel) {
 		templ.WriteString(text.Line("│"))
 		templ.WriteString(text.LineBreak())
 
-		if update.Error == nil {
+		if update.Error == nil && !update.Done {
 			fmt.Fprint(
 				templ,
 				text.Line("├  "),
@@ -64,7 +64,7 @@ func AddOrOpenView(model chan AddOrOpenViewModel) {
 			fmt.Fprint(
 				templ,
 				text.Line("└  "),
-				text.Colorize("Done", text.Purple, text.Bold),
+				text.Colorize("Done - documentation added", text.Purple, text.Bold),
 				text.LineBreak(),
 			)
 		}

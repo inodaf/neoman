@@ -20,8 +20,15 @@ func main() {
 		return
 	}
 
+	// Handle: nman or nman .
 	if len(os.Args) == 1 || (len(os.Args) == 2 && os.Args[1] == ".") {
 		operations.OpenFromCurrentDirectory()
+		return
+	}
+
+	// Handle: nman <author>
+	if len(os.Args) == 2 && strings.Count(os.Args[1], "/") == 0 {
+		// add all docs from the author
 		return
 	}
 
@@ -31,6 +38,7 @@ func main() {
 		return
 	}
 
+	// Handle: nman <author/repo>
 	if len(os.Args) == 2 && strings.Count(os.Args[1], "/") == 1 {
 		cmd.AddOrOpen(context.TODO(), os.Args[1])
 		return

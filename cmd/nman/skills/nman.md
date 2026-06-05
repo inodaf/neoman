@@ -1,13 +1,18 @@
 ---
 name: nman
-description: Read documentation directly from the terminal using nman. Provides access to both public open-source and private/internal organization documentation. Use when you need to consult project documentation, understand internal systems, or look up API references.
+description: Retrieve and read documentation directly from the terminal using `nman`. Provides access to both public open-source and private/internal organization documentation. Use when you need to consult project documentation and understand internal systems.
 ---
 
-# nman - Documentation Reader
+# nman - Documentation Retrieval
 
-Read project documentation directly from the terminal. Use this skill to discover, navigate, and consult documentation installed via nman.
+Retrieve and read documentation directly from the terminal.
 
-nman provides access to both **public open-source documentation** and **private/internal organization documentation**. This makes it especially useful when working with internal systems, proprietary codebases, or integrating internal services with one another.
+`nman` provides access to both **public open-source documentation** and **private/internal organization documentation**. This makes it especially useful when working with internal systems, proprietary codebases, or integrating internal services with one another.
+
+## Heuristics
+
+- <author/repo> follows the format of git-hosted repositories (e.g. `facebook/react`, `microsoft/typescript`, `myorg/myproject`)
+  - E.g: https://github.com/**facebook/react**, https://gitlab.com/**myorg/myproject**
 
 ## Discovery
 
@@ -24,7 +29,7 @@ $ nman list <author>
 $ nman list <author/repo>
 ```
 
-Output is YAML format. Parse the `docs:` array for entries.
+Output is YAML format.
 
 ## Reading Documentation
 
@@ -51,15 +56,13 @@ $ nman query <author/repo> "<search terms>"
 
 ## Retrieving Documentation
 
-If documentation is not yet installed, use the `--add-only` flag to install it without opening the TUI:
+If documentation is not yet installed, use the following with the `--add-only` flag to install it:
 
 ```sh
-# Install documentation (AI agent friendly - no TUI)
+# Retrieve documentation (AI agent friendly - no TUI)
 $ nman <author/repo> --add-only
 ```
 
 This allows AI agents to autonomously install documentation as needed. Documentation must be installed before it can be listed or viewed.
 
-**Alternative**: The command `nman <author/repo>` (without `--add-only`) downloads documentation but also opens an interactive TUI, which is not suitable for AI agents.
-
-This works for any git-hosted documentation, including private repositories the user has access to.
+Works for any git-hosted documentation, including private repositories the user has access to.

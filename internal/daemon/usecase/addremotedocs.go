@@ -30,15 +30,15 @@ func (u *UseCase) AddRemoteDocs(input AddDocsInput) error {
 		return ErrAddRemoteDocsAlreadyExist
 	}
 
-	err = u.gitRemoteClient.IsDocsDirPresent(input.Author, input.Repository)
-	if err != nil {
+	availability, err := u.gitHost.HasDocs(input.Author, []string{input.Repository})
+	if err != nil || availability[input.Repository] == false {
 		return ErrAddRemoteDocsDirNotFound
 	}
 
 	docs := domain.NewRemoteDocs(
 		input.Author,
 		input.Repository,
-		domain.RemoteSource(u.gitRemoteClient.Name()),
+		domain.RemoteSource(u.gitHost.Name()),
 	)
 
 	err = u.sourceRegistry.Download(*docs)

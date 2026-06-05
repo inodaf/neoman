@@ -11,8 +11,8 @@ import (
 func GetDocs(owner, repo string) error {
 	remote := git.NewGitHubClient()
 
-	err := remote.IsDocsDirPresent(owner, repo)
-	if err != nil {
+	availability, err := remote.HasDocs(owner, []string{repo})
+	if err != nil || availability[repo] == false {
 		return fmt.Errorf("neoman: Could not locate 'docs/' from '%s/%s' on GitHub.\nMake sure you have reading rights", owner, repo)
 	}
 
