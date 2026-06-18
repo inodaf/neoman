@@ -90,5 +90,35 @@ func (c *GitHubClient) HasDocs(author string, repos []string) (map[string]bool, 
 	return availability, nil
 }
 
+func (c *GitHubClient) ListActiveRepos(author string, limit uint) ([]string, error) {
+	binPath, err := exec.LookPath("gh")
+	if err != nil {
+		return nil, ErrGitHubCliNotInstalled
+	}
+
+	args := []string{
+		"repo",
+		"list",
+		author,
+		"--no-archived",
+		"--source",
+		"--json",
+		"name,description,visibility,updatedAt",
+	}
+
+	if limit > 0 {
+		args = append(args, "--limit", fmt.Sprintf("%d", limit))
+	}
+
+	rawResult, err := exec.Command(binPath, args...).Output()
+	if err != nil {
+		return nil, ErrGitHubUnableToParseResponse
+	}
+	
+	var response []Repo
+	err = json.Unmarshal(rawResult, &response)
+	//todo: resume from here
+}
+
 var ErrGitHubCliNotInstalled = errors.New("GitHub CLI was not found")
 var ErrGitHubUnableToParseResponse = errors.New("Unable to parse GitHub API response")
