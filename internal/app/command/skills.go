@@ -37,7 +37,7 @@ func (c *Command) installSkill() error {
 	}
 
 	fmt.Printf("Installed nman skill to %s\n\n", skillPath)
-	fmt.Println("Claude will now automatically use nman for documentation lookup.")
+	fmt.Println("Claude can now use nman for documentation lookup.")
 
 	return nil
 }

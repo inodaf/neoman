@@ -33,6 +33,14 @@ func main() {
 	useCase := usecase.NewUseCase(docsRepository, docsPageRepository, ghClient, fsSourceRegistry, jobRepository)
 	scheduler := scheduler.NewScheduler(worker)
 
+	err = useCase.AddManyRemoteDocs(usecase.AddManyDocsInput{
+		Limit: 100,
+		Author: "inodaf",
+	})
+	if err != nil {
+		panic(err)
+	}
+
 	mux := controller.NewHttpController(useCase, jobRepository)
 
 	var wg sync.WaitGroup
