@@ -11,7 +11,6 @@ func NewUseCase(
 	gitHost git.GitRemote,
 	sourceRegistry repo.ContentSource,
 	jobRepository repo.JobRepository,
-
 ) *UseCase {
 	return &UseCase{
 		docsRepository:     docsRepository,

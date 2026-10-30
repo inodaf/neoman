@@ -18,7 +18,7 @@ func (c *controller) ListAuthorDocs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, err := c.useCase.ListAuthorDocs(usecase.ListAuthorDocsInput{
+	output, err := c.useCase.GetFromAuthor(usecase.GetFromAuthorInput{
 		Author: author,
 	})
 
@@ -26,7 +26,7 @@ func (c *controller) ListAuthorDocs(w http.ResponseWriter, r *http.Request) {
 	case nil:
 		w.Header().Set("Content-Type", "application/yaml")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(formatAuthorDocsAsYAML(author, output.Documentations)))
+		w.Write([]byte(formatAuthorDocsAsYAML(author, output.Docs)))
 		return
 	case usecase.ErrListAuthorDocsAuthorRequired:
 		http.Error(w, "Author is required", http.StatusBadRequest)

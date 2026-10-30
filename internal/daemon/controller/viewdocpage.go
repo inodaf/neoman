@@ -19,7 +19,7 @@ func (c *controller) ViewDocPage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, err := c.useCase.ViewDocPage(usecase.ViewDocPageInput{
+	output, err := c.useCase.GetPage(usecase.GetPageInput{
 		Author:       author,
 		Repository:   repo,
 		RelativePath: decodedPath,

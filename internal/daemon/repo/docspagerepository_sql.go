@@ -15,7 +15,7 @@ func NewDocsPageRepository(db *sql.DB) DocsPageRepository {
 	return &docsPageRepository{db: db}
 }
 
-func (r *docsPageRepository) Save(page domain.DocsPage) error {
+func (r *docsPageRepository) Save(page domain.Page) error {
 	query := `
 		INSERT INTO docpages (author, repository, relative_path, title, content, last_modified_at, vector)
 		VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -42,7 +42,7 @@ func (r *docsPageRepository) Save(page domain.DocsPage) error {
 	return nil
 }
 
-func (r *docsPageRepository) SaveMany(pages []domain.DocsPage) error {
+func (r *docsPageRepository) SaveMany(pages []domain.Page) error {
 	for _, page := range pages {
 		err := r.Save(page)
 		if err != nil {
@@ -52,7 +52,7 @@ func (r *docsPageRepository) SaveMany(pages []domain.DocsPage) error {
 	return nil
 }
 
-func (r *docsPageRepository) GetAll(author, repository string) ([]domain.DocsPage, error) {
+func (r *docsPageRepository) GetAll(author, repository string) ([]domain.Page, error) {
 	query := `
 		SELECT author, repository, relative_path, title, last_modified_at
 		FROM docpages
@@ -66,9 +66,9 @@ func (r *docsPageRepository) GetAll(author, repository string) ([]domain.DocsPag
 	}
 	defer rows.Close()
 
-	var pages []domain.DocsPage
+	var pages []domain.Page
 	for rows.Next() {
-		var page domain.DocsPage
+		var page domain.Page
 		err := rows.Scan(
 			&page.Author,
 			&page.Repository,
@@ -89,14 +89,14 @@ func (r *docsPageRepository) GetAll(author, repository string) ([]domain.DocsPag
 	return pages, nil
 }
 
-func (r *docsPageRepository) GetOne(author, repository, relativePath string) (*domain.DocsPage, error) {
+func (r *docsPageRepository) GetOne(author, repository, relativePath string) (*domain.Page, error) {
 	query := `
 		SELECT author, repository, relative_path, title, content, last_modified_at
 		FROM docpages
 		WHERE author = ? AND repository = ? AND relative_path = ?
 	`
 
-	var page domain.DocsPage
+	var page domain.Page
 	err := r.db.QueryRow(query, author, repository, relativePath).Scan(
 		&page.Author,
 		&page.Repository,

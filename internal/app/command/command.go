@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/url"
 	"regexp"
 	"strings"
 
@@ -20,20 +21,20 @@ func New() *Command {
 		},
 	}
 
-	return &Command{daemonHttpClient: daemonClient}
+	return &Command{daemonClient: daemonClient}
 }
 
 type Command struct {
-	daemonHttpClient http.Client
+	daemonClient http.Client
 }
 
 func (c *Command) parseAuthorAndRepo(arg string) (author string, repo string, err error) {
-	var resourcePattern = regexp.MustCompile(`[^a-zA-Z0-9-_.\s\/]`)
+	resourcePattern := regexp.MustCompile(`[^a-zA-Z0-9-_.\s\/]`)
 	arg = strings.ToLower(strings.TrimSpace(arg))
 	separatorCount := strings.Count(arg, "/")
 
 	if separatorCount > 1 || resourcePattern.MatchString(arg) {
-		return "", "", fmt.Errorf("Invalid argument. Must be 'org/repo' or 'author/repo'")
+		return "", "", fmt.Errorf("invalid argument. Must be 'org/repo' or 'author/repo'")
 	}
 
 	authorWithRepo := strings.Split(arg, "/")
@@ -41,4 +42,13 @@ func (c *Command) parseAuthorAndRepo(arg string) (author string, repo string, er
 	err = nil
 
 	return
+}
+
+// SocketClientPing tries to ping the daemon through the Unix socket.
+// If the daemon is not running, it returns an error.
+func (c *Command) SocketClientPing() error {
+	resource := url.URL{Host: "unix", Scheme: "http", Path: "/ping"}
+	_, err := c.daemonClient.Get(resource.String())
+
+	return err
 }

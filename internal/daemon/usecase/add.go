@@ -5,14 +5,10 @@ import (
 	"fmt"
 
 	"github.com/inodaf/neoman/internal/daemon/domain"
+	"github.com/inodaf/neoman/pkg/git"
 )
 
-type AddDocsInput struct {
-	Author     string
-	Repository string
-}
-
-func (u *UseCase) AddRemoteDocs(input AddDocsInput) error {
+func (u *UseCase) Add(input AddInput) error {
 	if input.Author == "" {
 		return ErrAddRemoteDocsAuthorRequired
 	}
@@ -30,15 +26,15 @@ func (u *UseCase) AddRemoteDocs(input AddDocsInput) error {
 		return ErrAddRemoteDocsAlreadyExist
 	}
 
-	availability, err := u.gitHost.HasDocs(input.Author, []string{input.Repository})
-	if err != nil || availability[input.Repository] == false {
+	availability, err := u.gitHost.HasDocs(git.Repo{Author: input.Author, Name: input.Repository})
+	if err != nil || !availability {
 		return ErrAddRemoteDocsDirNotFound
 	}
 
-	docs := domain.NewRemoteDocs(
+	docs := domain.NewDocs(
 		input.Author,
 		input.Repository,
-		domain.RemoteSource(u.gitHost.Name()),
+		domain.ContentSource(u.gitHost.Name()),
 	)
 
 	err = u.sourceRegistry.Download(*docs)
@@ -71,6 +67,11 @@ func (u *UseCase) AddRemoteDocs(input AddDocsInput) error {
 	}
 
 	return nil
+}
+
+type AddInput struct {
+	Author     string
+	Repository string
 }
 
 var (

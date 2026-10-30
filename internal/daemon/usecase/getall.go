@@ -2,11 +2,7 @@ package usecase
 
 import "fmt"
 
-type ListAllDocsOutput struct {
-	Documentations []string
-}
-
-func (u *UseCase) ListAllDocs() (*ListAllDocsOutput, error) {
+func (u *UseCase) GetAll() (*GetAllOutput, error) {
 	docs, err := u.docsRepository.GetAll()
 	if err != nil {
 		return nil, err
@@ -21,9 +17,11 @@ func (u *UseCase) ListAllDocs() (*ListAllDocsOutput, error) {
 		documentations[i] = fmt.Sprintf("%s/%s", doc.Author, doc.Repository)
 	}
 
-	return &ListAllDocsOutput{Documentations: documentations}, nil
+	return &GetAllOutput{Docs: documentations}, nil
 }
 
-var (
-	ErrListAllDocsEmpty = fmt.Errorf("No documentations found")
-)
+type GetAllOutput struct {
+	Docs []string
+}
+
+var ErrListAllDocsEmpty = fmt.Errorf("no documentations found")

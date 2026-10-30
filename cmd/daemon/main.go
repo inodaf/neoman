@@ -9,12 +9,11 @@ import (
 	"github.com/inodaf/neoman/internal/daemon/scheduler"
 	"github.com/inodaf/neoman/internal/daemon/usecase"
 	"github.com/inodaf/neoman/internal/daemon/worker"
-	"github.com/inodaf/neoman/internal/management"
 	"github.com/inodaf/neoman/pkg/git"
 )
 
 func main() {
-	db, err := InitDB()
+	db, err := initDB()
 	if err != nil {
 		panic(err)
 	}
@@ -32,16 +31,7 @@ func main() {
 	worker := worker.NewWorker(docsPageRepository, fsSourceRegistry, docsRepository, jobRepository)
 	useCase := usecase.NewUseCase(docsRepository, docsPageRepository, ghClient, fsSourceRegistry, jobRepository)
 	scheduler := scheduler.NewScheduler(worker)
-
-	err = useCase.AddManyRemoteDocs(usecase.AddManyDocsInput{
-		Limit: 100,
-		Author: "inodaf",
-	})
-	if err != nil {
-		panic(err)
-	}
-
-	mux := controller.NewHttpController(useCase, jobRepository)
+	mux := controller.New(useCase, jobRepository)
 
 	var wg sync.WaitGroup
 	wg.Add(2)
@@ -54,15 +44,10 @@ func main() {
 
 	go func() {
 		defer wg.Done()
-		err := ServeIpc(mux)
+		err := serveIpc(mux)
 		if err != nil {
 			panic(err)
 		}
-	}()
-
-	go func() {
-		defer wg.Done()
-		management.SocketServeTCP(db)
 	}()
 
 	wg.Wait()

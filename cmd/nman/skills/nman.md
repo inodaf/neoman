@@ -11,8 +11,22 @@ Retrieve and read documentation directly from the terminal.
 
 ## Heuristics
 
-- <author/repo> follows the format of git-hosted repositories (e.g. `facebook/react`, `microsoft/typescript`, `myorg/myproject`)
+- <owner/repo> follows the format of git-hosted repositories (e.g. `facebook/react`, `microsoft/typescript`, `myorg/myproject`)
   - E.g: https://github.com/**facebook/react**, https://gitlab.com/**myorg/myproject**
+- Repositories must have a `docs/` directory at the root level to be recognized as documentation sources;
+- Markdown is the supported format for documentation files;
+- Mermaid diagrams and code blocks within markdown files are supported.
+
+## Retrieving Documentation
+
+If documentation is not yet installed, use the following:
+
+```sh
+# Retrieve documentation from a specific repository (public or private)
+$ nman add <owner/repo>
+```
+
+Works for any git-hosted (GitHub) documentation, including private repositories the user has access to.
 
 ## Discovery
 
@@ -22,11 +36,11 @@ Start here to understand what documentation is available:
 # List all installed documentation
 $ nman list
 
-# List all projects from a specific author/organization  
-$ nman list <author>
+# List all projects from a specific owner/organization
+$ nman list <owner>
 
 # List all pages within a project (with titles and paths)
-$ nman list <author/repo>
+$ nman list <owner/repo>
 ```
 
 Output is YAML format.
@@ -35,34 +49,19 @@ Output is YAML format.
 
 ```sh
 # Read a specific page by path (recommended for AI agents)
-$ nman view <author/repo> "<path>"
+$ nman view <owner/repo> "<path>"
 ```
-
-**Note**: The command `nman <author/repo>` opens an interactive TUI (Terminal User Interface) which is not suitable for AI agents. Always use `nman view` with a specific path instead.
 
 ## Searching
 
 ```sh
 # Search within a project's documentation
-$ nman query <author/repo> "<search terms>"
+$ nman query <owner/repo> "<search terms>"
 ```
 
 ## Recommended Workflow
 
-1. Run `nman list` to discover available documentation
-2. Run `nman list <author/repo>` to see specific pages with their paths
-3. Use `nman view <author/repo> "<path>"` to read a specific page
-4. Use `nman query` if you need to search for specific content
-
-## Retrieving Documentation
-
-If documentation is not yet installed, use the following with the `--add-only` flag to install it:
-
-```sh
-# Retrieve documentation (AI agent friendly - no TUI)
-$ nman <author/repo> --add-only
-```
-
-This allows AI agents to autonomously install documentation as needed. Documentation must be installed before it can be listed or viewed.
-
-Works for any git-hosted documentation, including private repositories the user has access to.
+1. Use `nman list` to discover available documentation
+2. Use `nman list <owner/repo>` to see specific pages with their paths
+3. Use `nman view <owner/repo> "<path>"` to read a specific page
+4. Use `nman query` to search for specific content/keywords

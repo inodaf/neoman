@@ -16,13 +16,13 @@ func (c *controller) ListAllDocs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, err := c.useCase.ListAllDocs()
+	output, err := c.useCase.GetAll()
 
 	switch err {
 	case nil:
 		w.Header().Set("Content-Type", "application/yaml")
 		w.WriteHeader(http.StatusOK)
-		w.Write([]byte(formatAllDocsAsYAML(output.Documentations)))
+		w.Write([]byte(formatAllDocsAsYAML(output.Docs)))
 		return
 	case usecase.ErrListAllDocsEmpty:
 		http.Error(w, "No documentation found", http.StatusNotFound)

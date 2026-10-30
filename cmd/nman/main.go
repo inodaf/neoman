@@ -7,14 +7,13 @@ import (
 	"strings"
 
 	"github.com/inodaf/neoman/internal/app/command"
-	"github.com/inodaf/neoman/internal/management"
 	"github.com/inodaf/neoman/internal/operations"
 )
 
 func main() {
 	cmd := command.New()
 
-	err := management.SocketClientPing()
+	err := cmd.SocketClientPing()
 	if err != nil {
 		fmt.Println("neoman: Could not connect to daemon")
 		return
@@ -26,25 +25,16 @@ func main() {
 		return
 	}
 
-	// Handle: nman <author>
-	if len(os.Args) == 2 && strings.Count(os.Args[1], "/") == 0 {
-		// add all docs from the author
-		return
-	}
+	switch os.Args[1] {
+	case "add":
+		// Handle: nman add <author/repo>
+		if len(os.Args) != 3 || strings.Count(os.Args[1], "/") != 1 {
+			fmt.Println("neoman: Usage: nman add <author/repo>")
+			return
+		}
 
-	// Handle: nman <author/repo> --add-only
-	if len(os.Args) == 3 && strings.Count(os.Args[1], "/") == 1 && os.Args[2] == "--add-only" {
 		cmd.AddOnly(context.TODO(), os.Args[1])
 		return
-	}
-
-	// Handle: nman <author/repo>
-	if len(os.Args) == 2 && strings.Count(os.Args[1], "/") == 1 {
-		cmd.AddOrOpen(context.TODO(), os.Args[1])
-		return
-	}
-
-	switch os.Args[1] {
 	case "list":
 		if len(os.Args) == 2 {
 			// nman list → list all docs

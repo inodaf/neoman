@@ -11,7 +11,7 @@ func (c *controller) AddDocs(w http.ResponseWriter, r *http.Request) {
 	author := r.PathValue("author")
 	repo := r.PathValue("repo")
 
-	err := c.useCase.AddRemoteDocs(usecase.AddDocsInput{
+	err := c.useCase.Add(usecase.AddInput{
 		Author:     author,
 		Repository: repo,
 	})

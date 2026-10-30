@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/url"
 	"os/exec"
-	"strings"
 )
 
 func NewGitHubClient() GitRemote {
@@ -41,53 +40,41 @@ func (c *GitHubClient) CloneURL(author, repo string) string {
 	return fmt.Sprintf("git@github.com:%s/%s.git", author, repo)
 }
 
-func (c *GitHubClient) HasDocs(author string, repos []string) (map[string]bool, error) {
+func (c *GitHubClient) HasDocs(repo Repo) (bool, error) {
 	binPath, err := exec.LookPath("gh")
 	if err != nil {
-		return nil, ErrGitHubCliNotInstalled
+		return false, ErrGitHubCliNotInstalled
 	}
 
 	query := `query {
-		%s
-  }
-  fragment DocsFragment on Repository {
-    name
-    object(expression: "HEAD:docs") {
-      __typename
-    }
+		repository(owner: "%s", name: "%s") { 
+			name
+			object(expression: "HEAD:docs") { __typename }
+		}
   }`
 
-	var operations strings.Builder
-	for i, repo := range repos {
-		operation := `
-    repo%d: repository(owner: "%s", name: "%s") { ...DocsFragment }
-		`
-		fmt.Fprintf(&operations, operation, i, author, repo)
+	query = fmt.Sprintf(query, repo.Author, repo.Name)
+	rawResult, err := exec.Command(binPath, "api", "graphql", "-f", fmt.Sprintf("query=%s", query)).Output()
+	if err != nil {
+		return false, ErrGitHubCliNotInstalled
 	}
 
-	query = fmt.Sprintf(query, operations.String())
-	rawResult, err := exec.Command(binPath, "api", "graphql", "-f", fmt.Sprintf("query=%s", query)).Output()
-
 	var response struct {
-		Data map[string]struct {
-			Name   string `json:"name"`
-			Object struct {
-				Typename string `json:"__typename"`
-			} `json:"object"`
-		} `json:"data"`
+		data struct {
+			repository struct {
+				object struct {
+					Typename string `json:"__typename"`
+				}
+			}
+		}
 	}
 
 	err = json.Unmarshal(rawResult, &response)
 	if err != nil {
-		return nil, ErrGitHubUnableToParseResponse
+		return false, ErrGitHubUnableToParseResponse
 	}
 
-	availability := make(map[string]bool, len(repos))
-	for _, repo := range response.Data {
-		availability[repo.Name] = repo.Object.Typename != "null"
-	}
-
-	return availability, nil
+	return response.data.repository.object.Typename == "Tree", nil
 }
 
 func (c *GitHubClient) ListActiveRepos(author string, limit uint) ([]Repo, error) {
@@ -114,7 +101,7 @@ func (c *GitHubClient) ListActiveRepos(author string, limit uint) ([]Repo, error
 	if err != nil {
 		return nil, ErrGitHubUnableToParseResponse
 	}
-	
+
 	response := make([]Repo, limit, 128)
 	err = json.Unmarshal(rawResult, &response)
 	if err != nil {
@@ -124,5 +111,7 @@ func (c *GitHubClient) ListActiveRepos(author string, limit uint) ([]Repo, error
 	return response, nil
 }
 
-var ErrGitHubCliNotInstalled = errors.New("GitHub CLI was not found")
-var ErrGitHubUnableToParseResponse = errors.New("Unable to parse GitHub API response")
+var (
+	ErrGitHubCliNotInstalled       = errors.New("github cli was not found")
+	ErrGitHubUnableToParseResponse = errors.New("unable to parse github api response")
+)

@@ -36,7 +36,7 @@ func (c *Command) listDocPages(ctx context.Context, author, repo string) (string
 		return "", err
 	}
 
-	res, err := c.daemonHttpClient.Do(req)
+	res, err := c.daemonClient.Do(req)
 	if err != nil {
 		return "", err
 	}
@@ -63,7 +63,7 @@ func (c *Command) listDocPages(ctx context.Context, author, repo string) (string
 }
 
 var (
-	ErrListDocsNotFound = fmt.Errorf("Documentation not found. Add by running 'neoman author/repo'")
-	ErrListNoPagesFound = fmt.Errorf("Documentation is empty")
-	ErrListUnexpected   = fmt.Errorf("Unable to show documentation pages")
+	ErrListDocsNotFound = fmt.Errorf("documentation not found. add by running 'neoman author/repo'")
+	ErrListNoPagesFound = fmt.Errorf("documentation is empty")
+	ErrListUnexpected   = fmt.Errorf("unable to show documentation pages")
 )

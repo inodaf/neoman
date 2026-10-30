@@ -11,8 +11,8 @@ import (
 func GetDocs(owner, repo string) error {
 	remote := git.NewGitHubClient()
 
-	availability, err := remote.HasDocs(owner, []string{repo})
-	if err != nil || availability[repo] == false {
+	availability, err := remote.HasDocs(git.Repo{Author: owner, Name: repo})
+	if err != nil || !availability {
 		return fmt.Errorf("neoman: Could not locate 'docs/' from '%s/%s' on GitHub.\nMake sure you have reading rights", owner, repo)
 	}
 
@@ -44,8 +44,8 @@ func GetDocs(owner, repo string) error {
 func QueryDocumentContent(db *sql.DB, author, repository, relativePath string) (content, title string, err error) {
 	// Query with case-insensitive path matching
 	query := `
-		SELECT content, title FROM docpages 
-		WHERE author = ? AND repository = ? 
+		SELECT content, title FROM docpages
+		WHERE author = ? AND repository = ?
 		  AND LOWER(relative_path) = LOWER(?)
 		LIMIT 1
 	`

@@ -97,7 +97,7 @@ func (c *Command) addDocs(ctx context.Context, author, repo string) error {
 		return err
 	}
 
-	res, err := c.daemonHttpClient.Do(req)
+	res, err := c.daemonClient.Do(req)
 	if err != nil {
 		return err
 	}
@@ -120,7 +120,7 @@ func (c *Command) addDocs(ctx context.Context, author, repo string) error {
 }
 
 var (
-	ErrConflict   = fmt.Errorf("Docs already added")
-	ErrNoDocsDir  = fmt.Errorf("Repo does not have a 'docs/' directory")
-	ErrUnexpected = fmt.Errorf("Unable to add docs")
+	ErrConflict   = fmt.Errorf("docs already added")
+	ErrNoDocsDir  = fmt.Errorf("repo does not have a 'docs/' directory")
+	ErrUnexpected = fmt.Errorf("unable to add docs")
 )

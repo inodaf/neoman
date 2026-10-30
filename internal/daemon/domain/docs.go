@@ -5,13 +5,13 @@ import (
 	"time"
 )
 
-func NewRemoteDocs(author, repository string, source RemoteSource) *RemoteDocs {
+func NewDocs(author, repository string, source ContentSource) *Docs {
 	if author == "" || repository == "" {
 		return nil
 	}
 
 	now := time.Now()
-	return &RemoteDocs{
+	return &Docs{
 		Source:     source,
 		Author:     author,
 		Repository: repository,
@@ -21,8 +21,8 @@ func NewRemoteDocs(author, repository string, source RemoteSource) *RemoteDocs {
 	}
 }
 
-type RemoteDocs struct {
-	Source     RemoteSource
+type Docs struct {
+	Source     ContentSource
 	Author     string
 	Repository string
 	Indexing   bool
@@ -32,23 +32,23 @@ type RemoteDocs struct {
 }
 
 // SetIndexing sets the indexing flag
-func (r *RemoteDocs) SetIndexing(value bool) {
+func (r *Docs) SetIndexing(value bool) {
 	r.Indexing = value
 }
 
 // StartIndexing marks this RemoteDocs as currently indexing
-func (r *RemoteDocs) StartIndexing() {
+func (r *Docs) StartIndexing() {
 	r.Indexing = true
 }
 
 // StopIndexing marks this RemoteDocs as done indexing and updates last sync time
-func (r *RemoteDocs) StopIndexing() {
+func (r *Docs) StopIndexing() {
 	r.Indexing = false
 	now := time.Now()
 	r.LastSyncAt = &now
 }
 
 // GetID returns composite ID for this RemoteDocs
-func (r *RemoteDocs) GetID() string {
+func (r *Docs) GetID() string {
 	return fmt.Sprintf("%s-%s", r.Author, r.Repository)
 }

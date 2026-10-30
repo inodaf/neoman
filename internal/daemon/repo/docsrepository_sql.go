@@ -15,7 +15,7 @@ func NewDocsRepository(db *sql.DB) DocsRepository {
 	return &docsRepository{db: db}
 }
 
-func (r *docsRepository) Save(entry domain.RemoteDocs) error {
+func (r *docsRepository) Save(entry domain.Docs) error {
 	query := `
 		INSERT INTO remote_docs (author, repository, source, indexing, last_sync_at, created_at, updated_at)
 		VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -57,14 +57,14 @@ func (r *docsRepository) Exists(author, repository string) (bool, error) {
 	return true, nil
 }
 
-func (r *docsRepository) GetOne(author, repository string, source domain.RemoteSource) (domain.RemoteDocs, error) {
+func (r *docsRepository) GetOne(author, repository string, source domain.ContentSource) (domain.Docs, error) {
 	query := `
 		SELECT author, repository, source, indexing, last_sync_at, created_at, updated_at
 		FROM remote_docs
 		WHERE author = ? AND repository = ? AND source = ?
 	`
 
-	var docs domain.RemoteDocs
+	var docs domain.Docs
 	err := r.db.QueryRow(query, author, repository, source).Scan(
 		&docs.Author,
 		&docs.Repository,
@@ -75,13 +75,13 @@ func (r *docsRepository) GetOne(author, repository string, source domain.RemoteS
 		&docs.UpdatedAt,
 	)
 	if err != nil {
-		return domain.RemoteDocs{}, fmt.Errorf("failed to get remote docs: %w", err)
+		return domain.Docs{}, fmt.Errorf("failed to get remote docs: %w", err)
 	}
 
 	return docs, nil
 }
 
-func (r *docsRepository) GetByAuthor(author string) ([]domain.RemoteDocs, error) {
+func (r *docsRepository) GetByAuthor(author string) ([]domain.Docs, error) {
 	query := `
 		SELECT author, repository, source, indexing, last_sync_at, created_at, updated_at
 		FROM remote_docs
@@ -94,9 +94,9 @@ func (r *docsRepository) GetByAuthor(author string) ([]domain.RemoteDocs, error)
 	}
 	defer rows.Close()
 
-	var docsList []domain.RemoteDocs
+	var docsList []domain.Docs
 	for rows.Next() {
-		var docs domain.RemoteDocs
+		var docs domain.Docs
 		err := rows.Scan(
 			&docs.Author,
 			&docs.Repository,
@@ -119,7 +119,7 @@ func (r *docsRepository) GetByAuthor(author string) ([]domain.RemoteDocs, error)
 	return docsList, nil
 }
 
-func (r *docsRepository) GetAll() ([]domain.RemoteDocs, error) {
+func (r *docsRepository) GetAll() ([]domain.Docs, error) {
 	query := `
 		SELECT author, repository, source, indexing, last_sync_at, created_at, updated_at
 		FROM remote_docs
@@ -132,9 +132,9 @@ func (r *docsRepository) GetAll() ([]domain.RemoteDocs, error) {
 	}
 	defer rows.Close()
 
-	var docsList []domain.RemoteDocs
+	var docsList []domain.Docs
 	for rows.Next() {
-		var docs domain.RemoteDocs
+		var docs domain.Docs
 		err := rows.Scan(
 			&docs.Author,
 			&docs.Repository,

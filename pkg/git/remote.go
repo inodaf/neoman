@@ -7,7 +7,7 @@ type GitRemote interface {
 	CloneURL(author, repo string) string
 	WebPageURL(author, repo string) string
 
-	HasDocs(author string, repos []string) (map[string]bool, error)
+	HasDocs(repo Repo) (bool, error)
 	ListActiveRepos(author string, limit uint) ([]Repo, error)
 }
 

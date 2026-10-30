@@ -10,9 +10,9 @@ import (
 	"github.com/inodaf/neoman/pkg/config"
 )
 
-// ServeIpc serves the IPC Unix Domain Socket (UDS) for communication
+// serveIpc serves the IPC Unix Domain Socket (UDS) for communication
 // between nman and the nmand (daemon).
-func ServeIpc(mux *http.ServeMux) error {
+func serveIpc(mux *http.ServeMux) error {
 	if err := os.RemoveAll(config.AppSockPath); err != nil {
 		slog.Error("unable to remove old socket", "err", err)
 		return fmt.Errorf("unable to remove old socket")

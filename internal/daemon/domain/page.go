@@ -8,12 +8,12 @@ import (
 	"time"
 )
 
-func NewDocsPage(author, repo, content, relPath string) (*DocsPage, error) {
+func NewPage(author, repo, content, relPath string) (*Page, error) {
 	if author == "" || repo == "" || content == "" {
 		return nil, fmt.Errorf("author, repo, and content must be provided")
 	}
 
-	page := &DocsPage{
+	page := &Page{
 		Author:     author,
 		Repository: repo,
 		Content:    content,
@@ -32,7 +32,7 @@ func NewDocsPage(author, repo, content, relPath string) (*DocsPage, error) {
 	return page, nil
 }
 
-type DocsPage struct {
+type Page struct {
 	Title          string
 	Author         string
 	Repository     string
@@ -46,7 +46,7 @@ type DocsPage struct {
 // It looks for the first Markdown header (lines starting with "# ") within the first few lines of the content.
 // If no header is found, it falls back to using the file name (without extension) from the relative path as the title.
 // If both methods fail, it returns an error.
-func (p *DocsPage) SetTitle() error {
+func (p *Page) SetTitle() error {
 	if p.Content == "" {
 		return fmt.Errorf("unable to infer title with no content")
 	}
@@ -71,7 +71,7 @@ func (p *DocsPage) SetTitle() error {
 	return nil
 }
 
-func (p *DocsPage) SetRelativePath(relPath string) error {
+func (p *Page) SetRelativePath(relPath string) error {
 	var pattern, err = regexp.Compile(`\.md(x)?$`)
 	if err != nil {
 		return fmt.Errorf("unable to check file extension")
@@ -85,7 +85,7 @@ func (p *DocsPage) SetRelativePath(relPath string) error {
 	return nil
 }
 
-func (p *DocsPage) SetLastModifiedAt(newDate time.Time) error {
+func (p *Page) SetLastModifiedAt(newDate time.Time) error {
 	if newDate.Before(p.LastModifiedAt) && newDate.Equal(p.LastModifiedAt) == false {
 		return fmt.Errorf("new date must be after the current last modified date")
 	}

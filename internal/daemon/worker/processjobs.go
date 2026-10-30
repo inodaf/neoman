@@ -81,6 +81,6 @@ func (w *Worker) processIndexPagesJob(ctx context.Context, job domain.Job) error
 	return w.IndexPages(IndexPagesInput{
 		Author:     payload.Author,
 		Repository: payload.Repository,
-		Source:     domain.RemoteSource(payload.Source),
+		Source:     domain.ContentSource(payload.Source),
 	})
 }

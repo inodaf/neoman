@@ -15,9 +15,9 @@ func TestQueryDocumentContent_Success(t *testing.T) {
 	db.Exec(`INSERT INTO docpages 
 	         (author, repository, relative_path, title, content, last_modified_at)
 	         VALUES (?, ?, ?, ?, ?, datetime('now'))`,
-		"n26", "repo", "Authoring Docs/4. Publishing.md", "Publishing", "# Publishing\n\nContent here")
+		"org", "repo", "Authoring Docs/4. Publishing.md", "Publishing", "# Publishing\n\nContent here")
 
-	content, title, err := QueryDocumentContent(db, "n26", "repo", "Authoring Docs/4. Publishing.md")
+	content, title, err := QueryDocumentContent(db, "org", "repo", "Authoring Docs/4. Publishing.md")
 	if err != nil {
 		t.Fatalf("QueryDocumentContent() error = %v", err)
 	}
@@ -40,10 +40,10 @@ func TestQueryDocumentContent_CaseInsensitive(t *testing.T) {
 	db.Exec(`INSERT INTO docpages 
 	         (author, repository, relative_path, title, content, last_modified_at)
 	         VALUES (?, ?, ?, ?, ?, datetime('now'))`,
-		"n26", "repo", "Authoring Docs/4. Publishing.md", "Publishing", "# Publishing\n\nContent")
+		"org", "repo", "Authoring Docs/4. Publishing.md", "Publishing", "# Publishing\n\nContent")
 
 	// Query with different case
-	content, title, err := QueryDocumentContent(db, "n26", "repo", "authoring docs/4. publishing.md")
+	content, title, err := QueryDocumentContent(db, "org", "repo", "authoring docs/4. publishing.md")
 	if err != nil {
 		t.Fatalf("QueryDocumentContent() error = %v", err)
 	}
@@ -63,7 +63,7 @@ func TestQueryDocumentContent_NotFound(t *testing.T) {
 	db := setupTestDB(t)
 	defer db.Close()
 
-	_, _, err := QueryDocumentContent(db, "n26", "repo", "nonexistent.md")
+	_, _, err := QueryDocumentContent(db, "org", "repo", "nonexistent.md")
 	if err == nil {
 		t.Fatalf("QueryDocumentContent() expected error, got nil")
 	}
@@ -78,10 +78,10 @@ func TestQueryDocumentContent_WrongProject(t *testing.T) {
 	db.Exec(`INSERT INTO docpages 
 	         (author, repository, relative_path, title, content, last_modified_at)
 	         VALUES (?, ?, ?, ?, ?, datetime('now'))`,
-		"n26", "repo1", "test.md", "Test", "content")
+		"org", "repo1", "test.md", "Test", "content")
 
 	// Query different project
-	_, _, err := QueryDocumentContent(db, "n26", "repo2", "test.md")
+	_, _, err := QueryDocumentContent(db, "org", "repo2", "test.md")
 	if err == nil {
 		t.Fatalf("QueryDocumentContent() expected error, got nil")
 	}
@@ -96,7 +96,7 @@ func TestQueryDocumentContent_WrongAuthor(t *testing.T) {
 	db.Exec(`INSERT INTO docpages 
 	         (author, repository, relative_path, title, content, last_modified_at)
 	         VALUES (?, ?, ?, ?, ?, datetime('now'))`,
-		"n26", "repo", "test.md", "Test", "content")
+		"org", "repo", "test.md", "Test", "content")
 
 	// Query different author
 	_, _, err := QueryDocumentContent(db, "different", "repo", "test.md")

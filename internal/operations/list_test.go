@@ -46,8 +46,8 @@ func TestQueryAllProjects(t *testing.T) {
 		path   string
 		title  string
 	}{
-		{"n26", "valium", "README.md", "Main"},
-		{"n26", "another", "API.md", "API"},
+		{"org1", "valium", "README.md", "Main"},
+		{"org1", "another", "API.md", "API"},
 		{"org2", "project1", "Guide.md", "Guide"},
 		{"org2", "project2", "Intro.md", "Intro"},
 	}
@@ -65,8 +65,8 @@ func TestQueryAllProjects(t *testing.T) {
 	}
 
 	expected := []string{
-		"n26/another",
-		"n26/repo",
+		"org1/another",
+		"org1/repo",
 		"org2/project1",
 		"org2/project2",
 	}
@@ -109,9 +109,9 @@ func TestQueryProjectsInOrg(t *testing.T) {
 		path   string
 		title  string
 	}{
-		{"n26", "valium", "README.md", "Main"},
-		{"n26", "another", "API.md", "API"},
-		{"n26", "zebra", "Guide.md", "Guide"},
+		{"org1", "valium", "README.md", "Main"},
+		{"org1", "another", "API.md", "API"},
+		{"org1", "zebra", "Guide.md", "Guide"},
 		{"org2", "project1", "Intro.md", "Intro"},
 	}
 
@@ -122,7 +122,7 @@ func TestQueryProjectsInOrg(t *testing.T) {
 			td.author, td.repo, td.path, td.title, "content")
 	}
 
-	repos, err := queryProjectsInOrg(db, "n26")
+	repos, err := queryProjectsInOrg(db, "org1")
 	if err != nil {
 		t.Fatalf("queryProjectsInOrg() error = %v", err)
 	}
@@ -167,10 +167,10 @@ func TestQueryDocsInProject(t *testing.T) {
 		path   string
 		title  string
 	}{
-		{"n26", "valium", "Publishing.md", "Publishing"},
-		{"n26", "valium", "Teams/Private.md", "Private Repositories"},
-		{"n26", "valium", "API.md", "API Guide"},
-		{"n26", "other", "README.md", "Other Repo"},
+		{"org1", "valium", "Publishing.md", "Publishing"},
+		{"org1", "valium", "Teams/Private.md", "Private Repositories"},
+		{"org1", "valium", "API.md", "API Guide"},
+		{"org1", "other", "README.md", "Other Repo"},
 	}
 
 	for _, td := range testData {
@@ -180,7 +180,7 @@ func TestQueryDocsInProject(t *testing.T) {
 			td.author, td.repo, td.path, td.title, "content")
 	}
 
-	docs, err := queryDocsInProject(db, "n26", "valium")
+	docs, err := queryDocsInProject(db, "org1", "valium")
 	if err != nil {
 		t.Fatalf("queryDocsInProject() error = %v", err)
 	}
@@ -220,7 +220,7 @@ func TestQueryDocsInProjectNotFound(t *testing.T) {
 // TestFormatAllProjects tests the FormatAllProjects function
 func TestFormatAllProjects(t *testing.T) {
 	projects := []string{
-		"n26/repo",
+		"org1/repo",
 		"another-org/some-project",
 	}
 
@@ -230,7 +230,7 @@ func TestFormatAllProjects(t *testing.T) {
 	if !strings.Contains(output, "docs:") {
 		t.Error("Missing docs header")
 	}
-	if !strings.Contains(output, "- n26/repo") {
+	if !strings.Contains(output, "- org1/repo") {
 		t.Error("Missing project in list")
 	}
 	if !strings.Contains(output, "- another-org/some-project") {
@@ -253,10 +253,10 @@ func TestFormatAllProjects(t *testing.T) {
 func TestFormatProjectsInOrg(t *testing.T) {
 	projects := []string{"valium", "another-project"}
 
-	output := FormatProjectsInOrg("n26", projects)
+	output := FormatProjectsInOrg("org1", projects)
 
 	// Verify structure
-	if !strings.Contains(output, "author: n26") {
+	if !strings.Contains(output, "author: org1") {
 		t.Error("Missing author header")
 	}
 	if !strings.Contains(output, "docs:") {
@@ -270,13 +270,13 @@ func TestFormatProjectsInOrg(t *testing.T) {
 	}
 
 	// Verify no prose, bold formatting, or separators
-	if strings.Contains(output, "**n26**") {
+	if strings.Contains(output, "**org1**") {
 		t.Error("Should not contain bold formatting")
 	}
 	if strings.Contains(output, "---") {
 		t.Error("Should not contain separators")
 	}
-	if strings.Contains(output, "`$ nman list n26/repo`") {
+	if strings.Contains(output, "`$ nman list org1/repo`") {
 		t.Error("Should not contain example command")
 	}
 }
@@ -288,10 +288,10 @@ func TestFormatDocsInProject(t *testing.T) {
 		{Title: "Private Repositories", RelativePath: "Teams/Private Repositories.md"},
 	}
 
-	output := FormatDocsInProject("n26", "valium", docs)
+	output := FormatDocsInProject("org1", "valium", docs)
 
 	// Verify structure
-	if !strings.Contains(output, "project: n26/repo") {
+	if !strings.Contains(output, "project: org1/repo") {
 		t.Error("Missing project header")
 	}
 	if !strings.Contains(output, "docs:") {
@@ -305,7 +305,7 @@ func TestFormatDocsInProject(t *testing.T) {
 	}
 
 	// Verify no prose, bold formatting, comments, or separators
-	if strings.Contains(output, "**n26/repo**") {
+	if strings.Contains(output, "**org1/repo**") {
 		t.Error("Should not contain bold formatting")
 	}
 	if strings.Contains(output, "---") {
@@ -314,7 +314,7 @@ func TestFormatDocsInProject(t *testing.T) {
 	if strings.Contains(output, "# formatted as \"Title: Path\"") {
 		t.Error("Should not contain format comment")
 	}
-	if strings.Contains(output, "`$ nman view n26/repo \"Authoring Docs/Publishing.md\"`") {
+	if strings.Contains(output, "`$ nman view org1/repo \"Authoring Docs/Publishing.md\"`") {
 		t.Error("Should not contain example command")
 	}
 }
@@ -323,10 +323,10 @@ func TestFormatDocsInProject(t *testing.T) {
 func TestFormatDocsInProjectEmpty(t *testing.T) {
 	docs := []availableDoc{}
 
-	output := FormatDocsInProject("n26", "valium", docs)
+	output := FormatDocsInProject("org1", "valium", docs)
 
 	// Should still have structure but no docs
-	if !strings.Contains(output, "project: n26/repo") {
+	if !strings.Contains(output, "project: org1/repo") {
 		t.Error("Missing project header")
 	}
 	if !strings.Contains(output, "docs:") {
@@ -363,12 +363,12 @@ func TestFormatErrorOrgNotFound(t *testing.T) {
 
 // TestFormatErrorProjectNotFound tests error message for project not found
 func TestFormatErrorProjectNotFound(t *testing.T) {
-	output := FormatErrorProjectNotFound("n26", "unknown")
+	output := FormatErrorProjectNotFound("org1", "unknown")
 
 	if !strings.Contains(output, "neoman:") {
 		t.Error("Missing neoman prefix")
 	}
-	if !strings.Contains(output, "No documentation found for project \"n26/unknown\"") {
+	if !strings.Contains(output, "No documentation found for project \"org1/unknown\"") {
 		t.Error("Missing error message with project name")
 	}
 }
@@ -381,7 +381,7 @@ func TestListAllProjects(t *testing.T) {
 	db.Exec(`INSERT INTO docpages 
 	         (author, repository, relative_path, title, content, last_modified_at)
 	         VALUES (?, ?, ?, ?, ?, datetime('now'))`,
-		"n26", "valium", "README.md", "Main", "content")
+		"org1", "valium", "README.md", "Main", "content")
 
 	projects, err := ListAllProjects(db)
 	if err != nil {
@@ -392,8 +392,8 @@ func TestListAllProjects(t *testing.T) {
 		t.Errorf("Expected 1 project, got %d", len(projects))
 	}
 
-	if projects[0] != "n26/repo" {
-		t.Errorf("Expected 'n26/repo', got %q", projects[0])
+	if projects[0] != "org1/repo" {
+		t.Errorf("Expected 'org1/repo', got %q", projects[0])
 	}
 }
 
@@ -405,9 +405,9 @@ func TestListProjectsInOrg(t *testing.T) {
 	db.Exec(`INSERT INTO docpages 
 	         (author, repository, relative_path, title, content, last_modified_at)
 	         VALUES (?, ?, ?, ?, ?, datetime('now'))`,
-		"n26", "valium", "README.md", "Main", "content")
+		"org1", "valium", "README.md", "Main", "content")
 
-	repos, err := ListProjectsInOrg(db, "n26")
+	repos, err := ListProjectsInOrg(db, "org1")
 	if err != nil {
 		t.Fatalf("ListProjectsInOrg() error = %v", err)
 	}
@@ -429,9 +429,9 @@ func TestListDocsInProject(t *testing.T) {
 	db.Exec(`INSERT INTO docpages 
 	         (author, repository, relative_path, title, content, last_modified_at)
 	         VALUES (?, ?, ?, ?, ?, datetime('now'))`,
-		"n26", "valium", "Publishing.md", "Publishing", "content")
+		"org1", "valium", "Publishing.md", "Publishing", "content")
 
-	docs, err := ListDocsInProject(db, "n26", "valium")
+	docs, err := ListDocsInProject(db, "org1", "valium")
 	if err != nil {
 		t.Fatalf("ListDocsInProject() error = %v", err)
 	}

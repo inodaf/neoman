@@ -2,15 +2,7 @@ package usecase
 
 import "fmt"
 
-type ListAuthorDocsInput struct {
-	Author string
-}
-
-type ListAuthorDocsOutput struct {
-	Documentations []string
-}
-
-func (u *UseCase) ListAuthorDocs(input ListAuthorDocsInput) (*ListAuthorDocsOutput, error) {
+func (u *UseCase) GetFromAuthor(input GetFromAuthorInput) (*GetFromAuthorOutput, error) {
 	if input.Author == "" {
 		return nil, ErrListAuthorDocsAuthorRequired
 	}
@@ -29,7 +21,15 @@ func (u *UseCase) ListAuthorDocs(input ListAuthorDocsInput) (*ListAuthorDocsOutp
 		repositories[i] = doc.Repository
 	}
 
-	return &ListAuthorDocsOutput{Documentations: repositories}, nil
+	return &GetFromAuthorOutput{Docs: repositories}, nil
+}
+
+type GetFromAuthorInput struct {
+	Author string
+}
+
+type GetFromAuthorOutput struct {
+	Docs []string
 }
 
 var (

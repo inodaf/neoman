@@ -6,16 +6,7 @@ import (
 	"github.com/inodaf/neoman/internal/daemon/domain"
 )
 
-type ListDocPagesInput struct {
-	Author     string
-	Repository string
-}
-
-type ListDocPagesOutput struct {
-	Pages []domain.DocsPage
-}
-
-func (u *UseCase) ListDocPages(input ListDocPagesInput) (*ListDocPagesOutput, error) {
+func (u *UseCase) GetPages(input GetPagesInput) (*GetPagesOutput, error) {
 	if input.Author == "" {
 		return nil, ErrListDocPagesAuthorRequired
 	}
@@ -38,7 +29,16 @@ func (u *UseCase) ListDocPages(input ListDocPagesInput) (*ListDocPagesOutput, er
 		return nil, err
 	}
 
-	return &ListDocPagesOutput{Pages: pages}, nil
+	return &GetPagesOutput{Pages: pages}, nil
+}
+
+type GetPagesInput struct {
+	Author     string
+	Repository string
+}
+
+type GetPagesOutput struct {
+	Pages []domain.Page
 }
 
 var (

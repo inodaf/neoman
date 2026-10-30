@@ -29,7 +29,9 @@ func (c *Command) listAllDocs(ctx context.Context) (string, error) {
 		return "", err
 	}
 
-	res, err := c.daemonHttpClient.Do(req)
+	req.Header.Set("Accept", "application/yaml")
+
+	res, err := c.daemonClient.Do(req)
 	if err != nil {
 		return "", err
 	}
@@ -52,6 +54,6 @@ func (c *Command) listAllDocs(ctx context.Context) (string, error) {
 }
 
 var (
-	ErrListAllDocsEmpty      = fmt.Errorf("No documentations found. Add by running 'nman author/repo'")
-	ErrListAllDocsUnexpected = fmt.Errorf("Unable to list documentations")
+	ErrListAllDocsEmpty      = fmt.Errorf("no documentations found. add by running 'nman author/repo'")
+	ErrListAllDocsUnexpected = fmt.Errorf("unable to list documentations")
 )

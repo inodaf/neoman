@@ -37,11 +37,15 @@ func NewFsSourceRegistry(remote git.GitRemote) ContentSource {
 }
 
 type FsSourceRegistry struct {
+	mu                sync.Mutex
 	GitRemoteProvider git.GitRemote
 }
 
 // Download optimimally clones the remote repository into into the registry directory.
-func (r *FsSourceRegistry) Download(docs domain.RemoteDocs) error {
+func (r *FsSourceRegistry) Download(docs domain.Docs) error {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
 	registryDir, err := config.DocsRegistryDir()
 	if err != nil {
 		return err
@@ -80,7 +84,7 @@ func (r *FsSourceRegistry) Download(docs domain.RemoteDocs) error {
 }
 
 // GetAllPaths returns all Markdown (.md, .mdx) file paths from the remote documentation.
-func (r *FsSourceRegistry) GetAllPaths(docs domain.RemoteDocs) ([]string, error) {
+func (r *FsSourceRegistry) GetAllPaths(docs domain.Docs) ([]string, error) {
 	registryDir, err := config.DocsRegistryDir()
 	if err != nil {
 		return nil, err
@@ -113,7 +117,7 @@ func (r *FsSourceRegistry) GetAllPaths(docs domain.RemoteDocs) ([]string, error)
 
 // GetAll reads the content of all Markdown (.md, .mdx) files in the remote
 // documentation and returns them as a slice of RegistryContent.
-func (r *FsSourceRegistry) GetAll(docs domain.RemoteDocs) ([]RegistryContent, error) {
+func (r *FsSourceRegistry) GetAll(docs domain.Docs) ([]RegistryContent, error) {
 	registryDir, err := config.DocsRegistryDir()
 	if err != nil {
 		return nil, err

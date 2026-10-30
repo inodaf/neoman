@@ -20,7 +20,7 @@ func (c *controller) ListDocPages(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	output, err := c.useCase.ListDocPages(usecase.ListDocPagesInput{
+	output, err := c.useCase.GetPages(usecase.GetPagesInput{
 		Author:     author,
 		Repository: repo,
 	})
@@ -48,7 +48,7 @@ func (c *controller) ListDocPages(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func formatPagesAsYAML(author, repo string, pages []domain.DocsPage) string {
+func formatPagesAsYAML(author, repo string, pages []domain.Page) string {
 	var yaml strings.Builder
 
 	fmt.Fprintf(&yaml, "documentation: %s/%s\n", author, repo)

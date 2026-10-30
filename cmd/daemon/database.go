@@ -15,7 +15,7 @@ import (
 //go:embed db/migrations/*.sql
 var migrations embed.FS
 
-func InitDB() (*sql.DB, error) {
+func initDB() (*sql.DB, error) {
 	dir, err := config.AppDataDir()
 	if err != nil {
 		return nil, err

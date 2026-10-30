@@ -35,22 +35,12 @@ Neoman brings the simplicity of Unix `man` pages to modern software documentatio
 
 ## Features
 
-### Available Now
-
 - **Local & Safe** — Runs and stays on your device. Perfect for private org documentations.
-
 - **Documentation Hub** — All your org's internal documentations in one local searchable place.
-
 - **Git-Native Workflow** — Documentation syncs with your code. Push to any Git provider (GitHub, GitLab, etc.).
-
 - **Practical Convention** — A `/docs` directory with `.md` files is all you need.
-
 - **Zero-Deployment** — No servers to maintain. Write Markdown, push to a Git provider, done.
-
-### Coming Soon
-
 - **Semantic Search** — Query using natural language. Get relevance-ranked results with preview snippets.
-
 - **Agentic Context Retrieval** — Retrieve relevant up-to-date documentation context for coding agents and AI assistants.
 
 

@@ -7,17 +7,7 @@ import (
 	"github.com/inodaf/neoman/internal/daemon/domain"
 )
 
-type ViewDocPageInput struct {
-	Author       string
-	Repository   string
-	RelativePath string
-}
-
-type ViewDocPageOutput struct {
-	Content string
-}
-
-func (u *UseCase) ViewDocPage(input ViewDocPageInput) (*ViewDocPageOutput, error) {
+func (u *UseCase) GetPage(input GetPageInput) (*GetPageOutput, error) {
 	if input.Author == "" {
 		return nil, ErrViewDocPageAuthorRequired
 	}
@@ -50,7 +40,7 @@ func (u *UseCase) ViewDocPage(input ViewDocPageInput) (*ViewDocPageOutput, error
 	}
 
 	// Try each path until we find the page
-	var page *domain.DocsPage
+	var page *domain.Page
 	for _, path := range pathsToTry {
 		page, err = u.docsPageRepository.GetOne(input.Author, input.Repository, path)
 		if err == nil {
@@ -65,7 +55,17 @@ func (u *UseCase) ViewDocPage(input ViewDocPageInput) (*ViewDocPageOutput, error
 		return nil, ErrViewDocPageNotFound
 	}
 
-	return &ViewDocPageOutput{Content: page.Content}, nil
+	return &GetPageOutput{Content: page.Content}, nil
+}
+
+type GetPageInput struct {
+	Author       string
+	Repository   string
+	RelativePath string
+}
+
+type GetPageOutput struct {
+	Content string
 }
 
 var (

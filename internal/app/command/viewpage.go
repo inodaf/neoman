@@ -29,7 +29,6 @@ func (c *Command) ViewPage(ctx context.Context, project string, docPath string) 
 }
 
 func (c *Command) viewDocPage(ctx context.Context, author, repo, docPath string) (string, error) {
-	// URL-encode the docPath to handle spaces and special characters
 	encodedPath := url.PathEscape(docPath)
 
 	resource := url.URL{
@@ -43,7 +42,7 @@ func (c *Command) viewDocPage(ctx context.Context, author, repo, docPath string)
 		return "", err
 	}
 
-	res, err := c.daemonHttpClient.Do(req)
+	res, err := c.daemonClient.Do(req)
 	if err != nil {
 		return "", err
 	}

@@ -29,14 +29,14 @@ func (c *Command) listAuthorDocs(ctx context.Context, author string) (string, er
 		return "", err
 	}
 
-	res, err := c.daemonHttpClient.Do(req)
+	res, err := c.daemonClient.Do(req)
 	if err != nil {
 		return "", err
 	}
 	defer res.Body.Close()
 
 	if res.StatusCode == http.StatusNotFound {
-		return "", fmt.Errorf("No documentations found for author '%s'", author)
+		return "", fmt.Errorf("no documentations found for author '%s'", author)
 	}
 
 	if res.StatusCode == http.StatusBadRequest {

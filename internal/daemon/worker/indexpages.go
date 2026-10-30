@@ -9,7 +9,7 @@ import (
 type IndexPagesInput struct {
 	Author     string
 	Repository string
-	Source     domain.RemoteSource
+	Source     domain.ContentSource
 }
 
 func (w *Worker) IndexPages(input IndexPagesInput) error {
@@ -38,7 +38,7 @@ func (w *Worker) IndexPages(input IndexPagesInput) error {
 	}()
 
 	for _, content := range files {
-		docsPage, err := domain.NewDocsPage(docs.Author, docs.Repository, content.Text, content.RelPath)
+		docsPage, err := domain.NewPage(docs.Author, docs.Repository, content.Text, content.RelPath)
 		if err != nil {
 			slog.Error("unable to create docs page", "error", err)
 			continue
